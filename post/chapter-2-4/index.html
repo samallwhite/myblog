@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="这是我第一篇博客。主播只用了2h看完了三章内容，想必是非常的不精的，于是整理一下。。。\n2 预备知识 本部分主要讲解了一些pytorch的基本操作和一些数学知识：\nTensor的初始化和一些特征 初始化张量：\nA = torch.tensor([[1,2,3],[4,5,6]]) 好了，我们现在已经会创造tensor了，我们接下来应该尝试着去得到一些关于这个tensor的信息： 首先值得提及的是python自身的len()方法同样适用，但该方法只能显示第0轴的尺寸信息：\nlen(A) 2 所以其实这玩意挺垃圾，我们需要用高级方法：shape\nA.shape torch.Size([2,3]) 我们可以通过使用reshape()方法改变张量的结构：\na = A.reshape(3,2) tensor([[1,2],[3,4],[5,6]]) 像tensorflow一样，我们可以搞ones、zeros等东西：\nzero_tensor = torch.zero((2,3)) one_tensor = torch.ones((2,3)) 生成随机张量：\nrandom_tensor = torch.randn((2,3)) btw，这个随机是从正态分布中随机抽样的\nTensor的一些运算： 基本的运算没啥区别，我们特别说一下连接(concatenate)\nX = torch.arange(12, dtype=torch.float32).reshape((3,4)) Y = torch.tensor([[2.0, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]]) torch.cat((X, Y), dim=0), torch.cat((X, Y), dim=1) (tensor([[ 0., 1., 2., 3.], [ 4., 5., 6., 7.], [ 8., 9., 10., 11.], [ 2., 1., 4., 3.], [ 1., 2., 3., 4.], [ 4., 3., 2., 1.]]), tensor([[ 0., 1., 2., 3., 2., 1., 4., 3.], [ 4., 5., 6., 7., 1., 2., 3., 4.], [ 8., 9., 10., 11., 4., 3., 2., 1.]])) 求和：\n">
+<title>动手学深度学习Pytorch(2-4章)</title>
+
+<link rel='canonical' href='https://samallwhite.github.io/myblog/post/chapter-2-4/'>
+
+<link rel="stylesheet" href="/myblog/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css"><meta property='og:title' content="动手学深度学习Pytorch(2-4章)">
+<meta property='og:description' content="这是我第一篇博客。主播只用了2h看完了三章内容，想必是非常的不精的，于是整理一下。。。\n2 预备知识 本部分主要讲解了一些pytorch的基本操作和一些数学知识：\nTensor的初始化和一些特征 初始化张量：\nA = torch.tensor([[1,2,3],[4,5,6]]) 好了，我们现在已经会创造tensor了，我们接下来应该尝试着去得到一些关于这个tensor的信息： 首先值得提及的是python自身的len()方法同样适用，但该方法只能显示第0轴的尺寸信息：\nlen(A) 2 所以其实这玩意挺垃圾，我们需要用高级方法：shape\nA.shape torch.Size([2,3]) 我们可以通过使用reshape()方法改变张量的结构：\na = A.reshape(3,2) tensor([[1,2],[3,4],[5,6]]) 像tensorflow一样，我们可以搞ones、zeros等东西：\nzero_tensor = torch.zero((2,3)) one_tensor = torch.ones((2,3)) 生成随机张量：\nrandom_tensor = torch.randn((2,3)) btw，这个随机是从正态分布中随机抽样的\nTensor的一些运算： 基本的运算没啥区别，我们特别说一下连接(concatenate)\nX = torch.arange(12, dtype=torch.float32).reshape((3,4)) Y = torch.tensor([[2.0, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]]) torch.cat((X, Y), dim=0), torch.cat((X, Y), dim=1) (tensor([[ 0., 1., 2., 3.], [ 4., 5., 6., 7.], [ 8., 9., 10., 11.], [ 2., 1., 4., 3.], [ 1., 2., 3., 4.], [ 4., 3., 2., 1.]]), tensor([[ 0., 1., 2., 3., 2., 1., 4., 3.], [ 4., 5., 6., 7., 1., 2., 3., 4.], [ 8., 9., 10., 11., 4., 3., 2., 1.]])) 求和：\n">
+<meta property='og:url' content='https://samallwhite.github.io/myblog/post/chapter-2-4/'>
+<meta property='og:site_name' content='samallwhite'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-07-19T20:00:00&#43;08:00'/><meta property='article:modified_time' content='2025-07-19T20:00:00&#43;08:00'/>
+<meta name="twitter:title" content="动手学深度学习Pytorch(2-4章)">
+<meta name="twitter:description" content="这是我第一篇博客。主播只用了2h看完了三章内容，想必是非常的不精的，于是整理一下。。。\n2 预备知识 本部分主要讲解了一些pytorch的基本操作和一些数学知识：\nTensor的初始化和一些特征 初始化张量：\nA = torch.tensor([[1,2,3],[4,5,6]]) 好了，我们现在已经会创造tensor了，我们接下来应该尝试着去得到一些关于这个tensor的信息： 首先值得提及的是python自身的len()方法同样适用，但该方法只能显示第0轴的尺寸信息：\nlen(A) 2 所以其实这玩意挺垃圾，我们需要用高级方法：shape\nA.shape torch.Size([2,3]) 我们可以通过使用reshape()方法改变张量的结构：\na = A.reshape(3,2) tensor([[1,2],[3,4],[5,6]]) 像tensorflow一样，我们可以搞ones、zeros等东西：\nzero_tensor = torch.zero((2,3)) one_tensor = torch.ones((2,3)) 生成随机张量：\nrandom_tensor = torch.randn((2,3)) btw，这个随机是从正态分布中随机抽样的\nTensor的一些运算： 基本的运算没啥区别，我们特别说一下连接(concatenate)\nX = torch.arange(12, dtype=torch.float32).reshape((3,4)) Y = torch.tensor([[2.0, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]]) torch.cat((X, Y), dim=0), torch.cat((X, Y), dim=1) (tensor([[ 0., 1., 2., 3.], [ 4., 5., 6., 7.], [ 8., 9., 10., 11.], [ 2., 1., 4., 3.], [ 1., 2., 3., 4.], [ 4., 3., 2., 1.]]), tensor([[ 0., 1., 2., 3., 2., 1., 4., 3.], [ 4., 5., 6., 7., 1., 2., 3., 4.], [ 8., 9., 10., 11., 4., 3., 2., 1.]])) 求和：\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/myblog/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/myblog/img/avatar_hu_f509edb42ecc0ebd.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/myblog">samallwhite</a></h1>
+            <h2 class="site-description"></h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/myblog/post/chapter-2-4/">动手学深度学习Pytorch(2-4章)</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jul 19, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    6 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>这是我第一篇博客。主播只用了2h看完了三章内容，想必是非常的不精的，于是整理一下。。。</p>
+<h1 id="2-预备知识">2 预备知识
+</h1><p>本部分主要讲解了一些pytorch的基本操作和一些数学知识：</p>
+<h3 id="tensor的初始化和一些特征">Tensor的初始化和一些特征
+</h3><p>初始化张量：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">A</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
+</span></span></code></pre></div><p>好了，我们现在已经会创造tensor了，我们接下来应该尝试着去得到一些关于这个tensor的信息：
+首先值得提及的是python自身的<code>len()</code>方法同样适用，但该方法只能显示第0轴的尺寸信息：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nb">len</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="m">2</span>
+</span></span></code></pre></div><p>所以其实这玩意挺垃圾，我们需要用高级方法：<code>shape</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">A</span><span class="o">.</span><span class="n">shape</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">torch.Size<span class="o">([</span>2,3<span class="o">])</span>
+</span></span></code></pre></div><p>我们可以通过使用<code>reshape()</code>方法改变张量的结构：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">a</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tensor<span class="o">([[</span>1,2<span class="o">]</span>,<span class="o">[</span>3,4<span class="o">]</span>,<span class="o">[</span>5,6<span class="o">]])</span>
+</span></span></code></pre></div><p>像tensorflow一样，我们可以搞ones、zeros等东西：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">zero_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zero</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">one_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+</span></span></code></pre></div><p>生成随机张量：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">random_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+</span></span></code></pre></div><p>btw，这个随机是从正态分布中随机抽样的</p>
+<h3 id="tensor的一些运算">Tensor的一些运算：
+</h3><p>基本的运算没啥区别，我们特别说一下连接(concatenate)</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">X</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">Y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+</span></span><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">(</span>tensor<span class="o">([[</span> 0., 1., 2., 3.<span class="o">]</span>,
+</span></span><span class="line"><span class="cl"><span class="o">[</span> 4., 5., 6., 7.<span class="o">]</span>,
+</span></span><span class="line"><span class="cl"><span class="o">[</span> 8., 9., 10., 11.<span class="o">]</span>,
+</span></span><span class="line"><span class="cl"><span class="o">[</span> 2., 1., 4., 3.<span class="o">]</span>,
+</span></span><span class="line"><span class="cl"><span class="o">[</span> 1., 2., 3., 4.<span class="o">]</span>,
+</span></span><span class="line"><span class="cl"><span class="o">[</span> 4., 3., 2., 1.<span class="o">]])</span>,
+</span></span><span class="line"><span class="cl">tensor<span class="o">([[</span> 0., 1., 2., 3., 2., 1., 4., 3.<span class="o">]</span>,
+</span></span><span class="line"><span class="cl"><span class="o">[</span> 4., 5., 6., 7., 1., 2., 3., 4.<span class="o">]</span>,
+</span></span><span class="line"><span class="cl"><span class="o">[</span> 8., 9., 10., 11., 4., 3., 2., 1.<span class="o">]]))</span>
+</span></span></code></pre></div><p>求和：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">A</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</span></span></code></pre></div><p>(非常的朴实无华)
+你可以很方便的将张量跟nparray转换：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">A</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">B</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="如何读取数据">如何读取数据：
+</h3><p>先别管那些有的没的，假设我们已经有了input和output了：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+</span></span></code></pre></div><p>接下来只需要这样：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">X</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">outputs</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
+</span></span></code></pre></div><h3 id="一些线代知识">一些线代知识：
+</h3><p>首先，我们介绍Hadamard积(⊙)：
+$$
+\mathbf{A} ⊙\mathbf{B} =
+\begin{bmatrix}
+a_{11}b_{11} &amp; a_{12}b_{12} &amp; \cdots &amp; a_{1n}b_{1n} \
+a_{21}b_{21} &amp; a_{22}b_{22} &amp; \cdots &amp; a_{2n}b_{2n} \
+\vdots       &amp; \vdots       &amp; \ddots &amp; \vdots       \
+a_{m1}b_{m1} &amp; a_{m2}b_{m2} &amp; \cdots &amp; a_{mn}b_{mn}
+\end{bmatrix}
+$$
+该Hadamard积可以表示为：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">A</span> <span class="o">*</span> <span class="n">B</span>
+</span></span></code></pre></div><p>接下来是降维操作，我们所指的降维操作是通过求和形式来实现的，就像刚才所提到的sum一样，我们同样使用sum，不过多了一些参数：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">A_sum_axis0</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">#对第0轴求和</span>
+</span></span></code></pre></div><p>但我们仍然可以在求和过程中保留维度：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">sum_A</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="n">true</span><span class="p">)</span>
+</span></span></code></pre></div><p>这很有用，他可以帮我们实现平均正则化：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">A</span> <span class="o">/</span> <span class="n">sum_A</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tensor<span class="o">([[</span>0.0000, 0.1667, 0.3333, 0.5000<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>0.1818, 0.2273, 0.2727, 0.3182<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>0.2105, 0.2368, 0.2632, 0.2895<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">		<span class="o">[</span>0.2222, 0.2407, 0.2593, 0.2778<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">		<span class="o">[</span>0.2286, 0.2429, 0.2571, 0.2714<span class="o">]])</span>
+</span></span></code></pre></div><p>若要计算累计总和，我们应该用cumsum：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">A</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;</span><span class="n">tensor</span><span class="p">([[</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="mf">12.</span><span class="p">,</span> <span class="mf">15.</span><span class="p">,</span> <span class="mf">18.</span><span class="p">,</span> <span class="mf">21.</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="mf">24.</span><span class="p">,</span> <span class="mf">28.</span><span class="p">,</span> <span class="mf">32.</span><span class="p">,</span> <span class="mf">36.</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="mf">40.</span><span class="p">,</span> <span class="mf">45.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">,</span> <span class="mf">55.</span><span class="p">]])</span>
+</span></span></code></pre></div><p>点积(dot product):</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+</span></span></code></pre></div><h1 id="mathbfx">矩阵-向量积：
+矩阵可以表示为行向量作为元素的列向量：
+$$
+\mathbf{A} =
+\begin{bmatrix}
+\mathbf{a}_1^{\top} \
+\mathbf{a}_2^{\top} \
+\vdots \
+\mathbf{a}_m^{\top}
+\end{bmatrix}
+\tag{2.3.5}
+$$
+在我们有一个同维度向量X的情况下:
+$$
+\mathbf{A} \mathbf{x} =
+\begin{bmatrix}
+\mathbf{a}_1^{\top} \
+\mathbf{a}_2^{\top} \
+\vdots \
+\mathbf{a}_m^{\top}
+\end{bmatrix}
+\mathbf{x}
+</h1><p>\begin{bmatrix}
+\mathbf{a}_1^{\top} \mathbf{x} \
+\mathbf{a}_2^{\top} \mathbf{x} \
+\vdots \
+\mathbf{a}_m^{\top} \mathbf{x}
+\end{bmatrix}
+\tag{2.3.6}
+$$
+这就是矩阵-向量积：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">troch</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+</span></span></code></pre></div><p>矩阵乘法：
+无需多言：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">mm</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+</span></span></code></pre></div><p><strong>范数(norm)</strong>：
+这个比较屌，也比较重要
+我们首先说一下$L_{2}$范数，其实这个范数就是此前学到的向量的模：
+$$
+|\mathbf{x}|<em>2 = \sqrt{ \sum</em>{i=1}^n x_i^2 }
+\tag{2.3.14}
+$$
+对于$L_{2}$范数，通常省略$L$：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span></code></pre></div><p>与此同时，我们还有$L_{1}$范数：
+$$
+|\mathbf{x}|<em>1 = \sum</em>{i=1}^n |x_i|
+\tag{2.3.15}
+$$
+与$L_{2}$范数相比，$L_{1}$范数受异常值的影响较小：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1">#我们没有可以直接计算L1范数的方法</span>
+</span></span><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">u</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</span></span></code></pre></div><p>而以上所提及的$L_{1}$范数与$L_{2}$范数都是$L_{p}$范数的特例：
+$$
+|\mathbf{x}|<em>p = \left( \sum</em>{i=1}^{n} |x_i|^p \right)^{1/p}
+\tag{2.3.16}
+$$
+同时，我们还给出Frobenius范数，这个范数是矩阵的元素平方和的平方根，就好像是矩阵的$L_{2}$范数：
+$$
+|\mathbf{X}|<em>F = \sqrt{ \sum</em>{i=1}^{m} \sum_{j=1}^{n} x_{ij}^2 }
+\tag{2.3.17}
+$$
+想要求解Frobenius范数也很简单：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">Mat</span><span class="p">)</span>
+</span></span></code></pre></div><p>范数和目标
+在深度学习中，我们经常试图解决优化问题：最大化分配给观测数据的概率; 最小化预测和真实观测之间的距离。用向量表示物品（如单词、产品或新闻文章），以便最小化相似项目之间的距离，最大化不同项目之间的距离。目标，或许是深度学习算法最重要的组成部分（除了数据），通常被表达为范数。</p>
+<h3 id="没有一些微积分知识">没有一些微积分知识
+</h3><p>因为主包还记得</p>
+<h3 id="自动微分">自动微分
+</h3><p>数学原理部分等我学了矩阵分析再说吧
+直接上代码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">4.0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="n">tensor</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">3.</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="n">x</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">x</span><span class="o">.</span><span class="n">grad</span> <span class="c1"># 默认值是None</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#整一个y</span>
+</span></span><span class="line"><span class="cl"><span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">y</span>
+</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span><span class="n">tensor</span><span class="p">(</span><span class="mf">28.</span><span class="p">,</span> <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">MulBackward0</span><span class="o">&gt;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">y</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span><span class="c1">#反向传播函数计算每个梯度</span>
+</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span><span class="n">tensor</span><span class="p">([</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">,</span> <span class="mf">12.</span><span class="p">])</span>
+</span></span></code></pre></div><p>非标量变量的反向传播：
+当y不是标量时，向量y关于向量x的导数的最自然解释是一个矩阵。对于高阶和高维的y和x，求导的结果可以是一个高阶张量。
+当调用向量的反向计算时，我们通常会试图计算一批训练样本中每个组成部分的损失函数的导数。这里，我们的目的不是计算微分矩阵，而是单独计算批量中每个样本的偏导数之和。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 对非标量调用backward需要传入一个gradient参数，该参数指定微分函数关于self的梯度。</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 本例只想求偏导数的和，所以传递一个1的梯度是合适的</span>
+</span></span><span class="line"><span class="cl"><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 等价于y.backward(torch.ones(len(x)))</span>
+</span></span><span class="line"><span class="cl"><span class="n">y</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">x</span><span class="o">.</span><span class="n">grad</span>
+</span></span></code></pre></div><p>关于为什么我们要对y.sum进行自动微分：
+对于：</p>
+<p>$$
+\mathbf{y} = f(\mathbf{x}) \in \mathbb{R}^n
+$$</p>
+<p>那么：</p>
+<p>$$
+\nabla_{\mathbf{x}} \mathbf{y} =
+\begin{bmatrix}
+\frac{\partial y_1}{\partial x_1} &amp; \cdots &amp; \frac{\partial y_1}{\partial x_n} \
+\vdots &amp; \ddots &amp; \vdots \
+\frac{\partial y_n}{\partial x_1} &amp; \cdots &amp; \frac{\partial y_n}{\partial x_n}
+\end{bmatrix}
+\in \mathbb{R}^{n \times n}
+$$
+这是一个 <strong>Jacobian（雅可比矩阵）</strong>，而不是一个简单的向量。
+所以如果我们不指定维度的话，pytorch就不知道以什么方向微分。</p>
+<h2 id="3线性神经网络">3.线性神经网络
+</h2><h3 id="线性回归">线性回归：
+</h3><h4 id="一些术语">一些术语：
+</h4><p>在机器学习的术语中，该数据集称为训练数据集（training data set）或训练集（training set）。每行数据（比如一次房屋交易相对应的数据）称为样本（sample），也可以称为数据点（datapoint）或数据样本（data instance）。我们把试图预测的目标（比如预测房屋价格）称为标（label）或目
+（target）。预测所依据的自变量（面积和房龄）称为特征（feature）或协变量（covariate）。</p>
+<p>在机器学习领域，我们通常使用的是高维数据集，建模时采用线性代数表示法会比较方便。当我们的输入包含 ( d ) 个特征时，我们将预测结果（通常使用“尖角”符号表示 ( y ) 的估计值）表示为：
+$$
+\hat{y} = w_1 x_1 + \cdots + w_d x_d + b
+\tag{3.1.2}
+$$</p>
+<p>将所有特征放到向量 ( $\mathbf{x} \in \mathbb{R}^d$) 中，并将所有权重放到向量 ( $\mathbf{w} \in \mathbb{R}^d$) 中，我们可以用点积形式来简洁地表达模型：
+$$
+\hat{y} = \mathbf{w}^\top \mathbf{x} + b
+\tag{3.1.3}
+$$</p>
+<p>在 (3.1.3) 中，向量 $\mathbf{x}$对应于单个数据样本的特征。用符号表示的矩阵 $\mathbf{X} \in \mathbb{R}^{n \times d}$ 可以很方便地引用我们整个数据集的 (n)个样本。其中， $\mathbf{x}$的每一行是一个样本，每一列是一种特征。
+对于特征集合 $\mathbf{x}$，预测值 $\hat{\mathbf{y}} \in \mathbb{R}^n$可以通过矩阵-向量乘法表示为：
+$$
+\hat{\mathbf{y}} = \mathbf{X} \mathbf{w} + b
+\tag{3.1.4}
+$$
+那么到目前为止，我们已经有了预期的模型形式，我们现在还需要两件事：模型质量的度量方式和更新模型以提高质量的方法。
+对于度量方式，我们提出损失函数(loss function):
+$$
+l^{(i)}(\mathbf{w}, b) = \frac{1}{2} \left( \hat{y}^{(i)} - y^{(i)} \right)^2
+$$</p>
+<p>为了衡量在整个数据集上的损失，我们对loss取均值，获得均方误差(MSE):</p>
+<p>$$
+L(\mathbf{w}, b) = \frac{1}{n} \sum_{i=1}^{n} \frac{1}{2} \left( \mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)} \right)^2
+$$</p>
+<p>所以我们的目的其实是：</p>
+<p>$$
+\mathbf{w}^<em>, b^</em> = \mathop{\arg\min}_{\mathbf{w}, b} L(\mathbf{w}, b)
+$$
+对于更新模型，我们采用梯度下降：
+梯度下降最简单的用法是计算损失函数（数据集中所有样本的损失均值）关于模型参数的导数（在这里也可以称为梯度）。但实际中的执行可能会非常慢：因为在每一次更新参数之前，我们必须遍历整个数据集。因此，我们通常会在每次需要计算更新的时候随机抽取一小批样本，这种变体叫做
+<strong>小批量随机梯度下降（minibatchstochastic gradient descent）。</strong>
+<strong>权重向量更新公式：</strong></p>
+<p>$$
+\mathbf{w} \leftarrow \mathbf{w} - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \mathbf{x}^{(i)} \left( \mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)} \right)
+$$</p>
+<p><strong>偏置更新公式：</strong></p>
+<p>$$
+b \leftarrow b - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \left( \mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)} \right)
+$$
+在上式中，$\eta$是学习率，$\mathcal{B}$是每一个小批量的数据个数，也叫batch size，这两个是超参数，是<strong>手动调整</strong>的。
+我们可以通过高斯噪声正态分布和极大似然估计来证明MSE的合理性，但本笔记不多赘述。我在证明过程中发现了一个ϵ，这有点意思：它 在推理或采样中才显式出现
+如果你是搞<strong>贝叶斯建模</strong>或<strong>生成模型</strong>，比如：</p>
+<ul>
+<li>贝叶斯线性回归</li>
+<li>GAN / VAE</li>
+<li>Diffusion Models
+这时候你会看到 ϵ 被当作“噪声源”来显式建模，用于：</li>
+<li>模拟不确定性；</li>
+<li>做采样或重构。</li>
+</ul>
+<h4 id="简单实现">简单实现
+</h4><p>(书中有scrach部分，但我不喜欢造轮子，我喜欢用轮子)
+我们先给定真的w和b用以生成数据iterator：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">true_w</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.4</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="n">true_b</span> <span class="o">=</span> <span class="mf">4.2</span>
+</span></span><span class="line"><span class="cl"><span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">d2l</span><span class="o">.</span><span class="n">synthetic_data</span><span class="p">(</span><span class="n">true_w</span><span class="p">,</span> <span class="n">true_b</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">load_array</span><span class="p">(</span><span class="n">data_arrays</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">is_train</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span> <span class="c1">#@save</span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;构造一个PyTorch数据迭代器&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">dataset</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">TensorDataset</span><span class="p">(</span><span class="o">*</span><span class="n">data_arrays</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="n">is_train</span><span class="p">)</span>
+</span></span></code></pre></div><p>定义模型：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+</span></span><span class="line"><span class="cl"><span class="n">net</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+</span></span></code></pre></div><p>其中Linear的第一个参数是输入维度，第二个参数是输出维度
+初始化模型参数：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">net</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">normal_</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">net</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span></span></code></pre></div><p>通过net[0]选择网络中的第一个图层，然后使用weight.data和bias.data方法访问参数。
+定义损失函数：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">loss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
+</span></span></code></pre></div><p>定义优化算法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">trainer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.03</span><span class="p">)</span>
+</span></span></code></pre></div><p>整体训练流程：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">3</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">data_iter</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="n">l</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">net</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="p">,</span><span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="n">trainer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="n">l</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="n">trainer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span><span class="c1">#这一步进行参数更新</span>
+</span></span><span class="line"><span class="cl">	<span class="n">l</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">net</span><span class="p">(</span><span class="n">features</span><span class="p">),</span> <span class="n">labels</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;epoch </span><span class="si">{</span><span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s1">, loss </span><span class="si">{</span><span class="n">l</span><span class="si">:</span><span class="s1">f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="softmax回归">Softmax回归：
+</h3><p>softmax回归解决的是分类问题，它也是一种单层神经网络，输出层同样是全连接层。
+$$
+\hat{\mathbf{y}} = \text{softmax}(\mathbf{o}), \quad \text{其中} \quad \hat{y}_j = \frac{\exp(o_j)}{\sum_k \exp(o_k)}
+$$
+softmax运算获取一个向量并将其映射为概率。
+在此部分我们仍然有小批量处理，他大大提高了mv运算。</p>
+<h4 id="交叉熵损失函数">交叉熵损失函数
+</h4><p>$$
+l = - \sum_{j=1}^{q} y_j \log(\hat{y}_j)
+$$</p>
+<h4 id="图片数据集的读取">图片数据集的读取
+</h4><p>我们可以通过torch内置的方法读取：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">trans</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">mnist_train</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">				<span class="n">root</span><span class="o">=</span><span class="s2">&#34;../data&#34;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">trans</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">mnist_test</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">				<span class="n">root</span><span class="o">=</span><span class="s2">&#34;../data&#34;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">trans</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span></code></pre></div><p>当然，我们可以获取这个数据的一些量：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nb">len</span><span class="p">(</span><span class="n">mnist_train</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">mnist_test</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="mi">60000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">mnist_train</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span><span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">])</span>
+</span></span></code></pre></div><p>其实现在这个train或test是一个4维张量</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tensor<span class="o">([</span>60000,1,28,28<span class="o">])</span>
+</span></span></code></pre></div><p>关于为什么不把维度为1的消除掉，进行concatenate，gpt是这么说的：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>项目</th>
+          <th>解释</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>nn.Conv2d(in_channels, out_channels, kernel_size)</code></td>
+          <td>要求输入必须是 4D 张量 `[N, C, H, W]`，哪怕 `C=1`，也必须写成 `[1, 28, 28]`。</td>
+      </tr>
+      <tr>
+          <td><code>DataLoader</code> 输出</td>
+          <td>自动组织成 `[batch_size, 1, 28, 28]`，方便后续操作。</td>
+      </tr>
+      <tr>
+          <td>多任务/迁移学习</td>
+          <td>如果以后处理彩色图像，保留 `channel` 更好扩展。</td>
+      </tr>
+      <tr>
+          <td><code>BatchNorm2d</code> / <code>MaxPool2d</code> 等</td>
+          <td>都要求显式通道维，否则报错。</td>
+      </tr>
+  </tbody>
+</table></div>
+<h4 id="softmax简洁实现">softmax简洁实现：
+</h4><p>初始化</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># PyTorch不会隐式地调整输入的形状。因此，</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 我们在线性层前定义了展平层（flatten），来调整网络输入的形状</span>
+</span></span><span class="line"><span class="cl"><span class="n">net</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">784</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span><span class="c1">#将1*28*28展平成784</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">init_weights</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">==</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl"><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">normal_</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">net</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">init_weights</span><span class="p">);</span>
+</span></span></code></pre></div><p>定义损失：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">loss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+</span></span></code></pre></div><p>关于reduction参数：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>取值</th>
+          <th>含义</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>'none'</code></td>
+          <td>不进行汇总，<strong>保留每个样本的损失值</strong>，输出 shape 为 <code>[batch_size]</code>。</td>
+      </tr>
+      <tr>
+          <td><code>'mean'</code>（默认）</td>
+          <td><strong>对所有样本的损失取平均</strong>，输出是一个标量。常用于大多数训练场景。</td>
+      </tr>
+      <tr>
+          <td><code>'sum'</code></td>
+          <td>对所有样本的损失<strong>直接求和</strong>，输出是一个标量。</td>
+      </tr>
+      <tr>
+          <td>优化依旧：</td>
+          <td></td>
+      </tr>
+  </tbody>
+</table></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">trainer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+</span></span></code></pre></div><p>训练总览：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">train_iter</span><span class="p">,</span> <span class="n">test_iter</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">num_epochs</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cuda&#39;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">net</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">net</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">total_loss</span><span class="p">,</span> <span class="n">total_correct</span><span class="p">,</span> <span class="n">total_samples</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">train_iter</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">y</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1"># 前向传播</span>
+</span></span><span class="line"><span class="cl">            <span class="n">y_hat</span> <span class="o">=</span> <span class="n">net</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1"># 反向传播与优化</span>
+</span></span><span class="line"><span class="cl">            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">total_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">total_correct</span> <span class="o">+=</span> <span class="p">(</span><span class="n">y_hat</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">total_samples</span> <span class="o">+=</span> <span class="n">y</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">train_acc</span> <span class="o">=</span> <span class="n">total_correct</span> <span class="o">/</span> <span class="n">total_samples</span>
+</span></span><span class="line"><span class="cl">        <span class="n">test_acc</span> <span class="o">=</span> <span class="n">evaluate_accuracy</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">test_iter</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;epoch </span><span class="si">{</span><span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">, loss </span><span class="si">{</span><span class="n">total_loss</span> <span class="o">/</span> <span class="n">total_samples</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, &#34;</span>
+</span></span><span class="line"><span class="cl">              <span class="sa">f</span><span class="s2">&#34;train acc </span><span class="si">{</span><span class="n">train_acc</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, test acc </span><span class="si">{</span><span class="n">test_acc</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">evaluate_accuracy</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">data_iter</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">device</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span><span class="o">.</span><span class="n">device</span>
+</span></span><span class="line"><span class="cl">    <span class="n">net</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">correct</span><span class="p">,</span> <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">data_iter</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">y</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">pred</span> <span class="o">=</span> <span class="n">net</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">correct</span> <span class="o">+=</span> <span class="p">(</span><span class="n">pred</span> <span class="o">==</span> <span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">total</span> <span class="o">+=</span> <span class="n">y</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">correct</span> <span class="o">/</span> <span class="n">total</span>
+</span></span></code></pre></div><h2 id="4-多层感知机mlp">4 多层感知机(MLP)
+</h2><p>就是神经元叠乐高。
+我们现在有了一些权威的函数：ReLU,tanh,sigmoid等等，ReLU比较权威因为好算。
+调用ReLU也很容易：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span></code></pre></div><p>而且，它的求导表现得特别好：要么让参数消失，要么让参数通过。这使得优化表现得更好，并
+且ReLU减轻了困扰以往神经网络的梯度消失问题。</p>
+<h3 id="mlp简洁实现">MLP简洁实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">net</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">					<span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">784</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">					<span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">					<span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">init_weights</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">==</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">normal_</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl"><span class="n">net</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">init_weights</span><span class="p">);</span>
+</span></span></code></pre></div><p>那么很容易知道这是个两层的神经网络，现先展平-&gt;线性层-&gt;ReLU-&gt;线性层-&gt;输出.
+训练过程的实现与我们实现softmax回归时完全相同，这种模块化设计使我们能够将与模型架构有关的内容独立出来：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">batch_size</span><span class="p">,</span> <span class="n">lr</span><span class="p">,</span> <span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">256</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">10</span>
+</span></span><span class="line"><span class="cl"><span class="n">loss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">trainer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">)</span>
+</span></span></code></pre></div><p><font color="#ff0000">目前为止，我们已经可以总结出训练一个模型的基本流程了</font>[[train_mlp_pytorch]]</p>
+<h3 id="对于模型的调整">对于模型的调整
+</h3><ul>
+<li>我们指出，训练可能会导致过拟合，也就是训练误差降低而泛化误差升高。</li>
+<li>原则上，在我们确定所有的超参数之前，我们不希望用到测试集。如果我们在模型选择过程中使用测试数据，可能会有过拟合测试数据的风险，那就麻烦大了。如果我们过拟合了训练数据，还可以在测试数据上的评估来判断过拟合。但是如果我们过拟合了测试数据，我们又该怎么知道呢？</li>
+<li>解决此问题的常见做法是将我们的数据分成三份，除了训练和测试数据集之外，还增加一个验证数据集（validation data set），也叫验证集（validation set）。</li>
+<li>流行的解决方案是采用<strong>K折交叉验证</strong></li>
+</ul>
+<h4 id="正则化">正则化
+</h4><p>权重衰减是最广泛应用的正则化方法，通常也被称为$L_{2}$正则化。
+为了惩罚权重向量的大小，我们必须以某种方式在损失函数中添加∥w∥2，但是模型应该如何平衡这个新的额外惩罚的损失？实际上，我们通过正则化常数λ来描述这种权衡，这是一个非负超参数，我们使用验证数据拟合：
+$$
+L(\mathbf{w}, b) + \frac{\lambda}{2} |\mathbf{w}|^2
+$$
+我们采用$L_{2}$范数主要是因为$L_{2}$正则分布构成经典的岭回归，这使得我们的学习算法偏向于在大量特征上均匀分布权重的模型。
+所以我们有了新的SGD：
+$$
+\mathbf{w} \leftarrow (1 - \eta \lambda) \mathbf{w} - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \mathbf{x}^{(i)} \left( \mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)} \right)
+$$
+此$\lambda$也是超参数。</p>
+<h4 id="暂退法">暂退法
+</h4><p>暂退法在前向传播过程中，计算每一内部层的同时丢弃一些神经元。用来避免过拟合</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">net</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">					<span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">784</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">					<span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">					<span class="c1"># 在第一个全连接层之后添加一个dropout层</span>
+</span></span><span class="line"><span class="cl">					<span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout1</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">					<span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">					<span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">					<span class="c1"># 在第二个全连接层之后添加一个dropout层</span>
+</span></span><span class="line"><span class="cl">					<span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout2</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">					<span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">init_weights</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">==</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">normal_</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">net</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">init_weights</span><span class="p">);</span>
+</span></span></code></pre></div><h4 id="前向传播与反向传播">前向传播与反向传播
+</h4><ul>
+<li>前向传播在神经网络定义的计算图中按顺序计算和存储中间变量，它的顺序是从输入层到输出层。</li>
+<li>反向传播按相反的顺序（从输出层到输入层）计算和存储神经网络的中间变量和参数的梯度。</li>
+<li>在训练深度学习模型时，前向传播和反向传播是相互依赖的。</li>
+</ul>
+<h4 id="数值稳定和模型初始化">数值稳定和模型初始化
+</h4><ul>
+<li>梯度消失和梯度爆炸是深度网络中常见的问题。在参数初始化时需要非常小心，以确保梯度和参数可以得到很好的控制。</li>
+<li>需要用启发式的初始化方法来确保初始梯度既不太大也不太小。</li>
+<li>ReLU激活函数缓解了梯度消失问题，这样可以加速收敛。</li>
+<li>随机初始化是保证在进行优化前打破对称性的关键。</li>
+<li>Xavier初始化表明，对于每一层，输出的方差不受输入数量的影响，任何梯度的方差不受输出数量的影响。</li>
+</ul>
+<h4 id="环境和分布偏移">环境和分布偏移
+</h4><ul>
+<li>在许多情况下，训练集和测试集并不来自同一个分布。这就是所谓的分布偏移。</li>
+<li>真实风险是从真实分布中抽取的所有数据的总体损失的预期。然而，这个数据总体通常是无法获得的。</li>
+<li>经验风险是训练数据的平均损失，用于近似真实风险。在实践中，我们进行经验风险最小化。</li>
+<li>在相应的假设条件下，可以在测试时检测并纠正协变量偏移和标签偏移。在测试时，不考虑这种偏移可能会成为问题。</li>
+<li>在某些情况下，环境可能会记住自动操作并以令人惊讶的方式做出响应。在构建模型时，我们必须考虑到这种可能性，并继续监控实时系统，并对我们的模型和环境以意想不到的方式纠缠在一起的可能性持开放态度。</li>
+</ul>
+<p>最终，作为2-4章学习效果评估，我选择手动搭建MLP，参阅：[[My MLP]]</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 samallwhite
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/myblog/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
