@@ -107,7 +107,7 @@ $$
 \tag{2.3.5}
 $$&lt;/p&gt;
 &lt;p&gt;在我们有一个同维度向量X的情况下:&lt;/p&gt;
-&lt;h1 id=&#34;mathbfx&#34;&gt;$$
+&lt;p&gt;$$
 \mathbf{A} \mathbf{x} =
 \begin{bmatrix}
 \mathbf{a}_1^{\top} \
@@ -116,6 +116,8 @@ $$&lt;/p&gt;
 \mathbf{a}_m^{\top}
 \end{bmatrix}
 \mathbf{x}
+$$&lt;/p&gt;
+&lt;h1 id=&#34;heading&#34;&gt;$$
 &lt;/h1&gt;&lt;p&gt;\begin{bmatrix}
 \mathbf{a}_1^{\top} \mathbf{x} \
 \mathbf{a}_2^{\top} \mathbf{x} \
