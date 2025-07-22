@@ -61,8 +61,8 @@
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;X&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;torch&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tensor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;inputs&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;to_numpy&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dtype&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;float&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;y&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;torch&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tensor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;outputs&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;to_numpy&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dtype&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;float&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;一些线代知识&#34;&gt;一些线代知识：
-&lt;/h3&gt;&lt;p&gt;首先，我们介绍Hadamard积(⊙)：
-$$
+&lt;/h3&gt;&lt;p&gt;首先，我们介绍Hadamard积(⊙)：&lt;/p&gt;
+&lt;p&gt;$$
 \mathbf{A} ⊙\mathbf{B} =
 \begin{bmatrix}
 a_{11}b_{11} &amp;amp; a_{12}b_{12} &amp;amp; \cdots &amp;amp; a_{1n}b_{1n} \
@@ -70,8 +70,8 @@ a_{21}b_{21} &amp;amp; a_{22}b_{22} &amp;amp; \cdots &amp;amp; a_{2n}b_{2n} \
 \vdots       &amp;amp; \vdots       &amp;amp; \ddots &amp;amp; \vdots       \
 a_{m1}b_{m1} &amp;amp; a_{m2}b_{m2} &amp;amp; \cdots &amp;amp; a_{mn}b_{mn}
 \end{bmatrix}
-$$
-该Hadamard积可以表示为：&lt;/p&gt;
+$$&lt;/p&gt;
+&lt;p&gt;该Hadamard积可以表示为：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;A&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;B&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;接下来是降维操作，我们所指的降维操作是通过求和形式来实现的，就像刚才所提到的sum一样，我们同样使用sum，不过多了一些参数：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;A_sum_axis0&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;A&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;axis&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;#对第0轴求和&lt;/span&gt;
@@ -133,32 +133,32 @@ $$&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;torch&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mm&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;X&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;范数(norm)&lt;/strong&gt;：
 这个比较屌，也比较重要
-我们首先说一下$L_{2}$范数，其实这个范数就是此前学到的向量的模：
-$$
+我们首先说一下$L_{2}$范数，其实这个范数就是此前学到的向量的模：&lt;/p&gt;
+&lt;p&gt;$$
 |\mathbf{x}|&lt;em&gt;2 = \sqrt{ \sum&lt;/em&gt;{i=1}^n x_i^2 }
 \tag{2.3.14}
-$$
-对于$L_{2}$范数，通常省略$L$：&lt;/p&gt;
+$$&lt;/p&gt;
+&lt;p&gt;对于$L_{2}$范数，通常省略$L$：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;torch&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;norm&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;与此同时，我们还有$L_{1}$范数：
-$$
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;与此同时，我们还有$L_{1}$范数：&lt;/p&gt;
+&lt;p&gt;$$
 |\mathbf{x}|&lt;em&gt;1 = \sum&lt;/em&gt;{i=1}^n |x_i|
 \tag{2.3.15}
-$$
-与$L_{2}$范数相比，$L_{1}$范数受异常值的影响较小：&lt;/p&gt;
+$$&lt;/p&gt;
+&lt;p&gt;与$L_{2}$范数相比，$L_{1}$范数受异常值的影响较小：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;#我们没有可以直接计算L1范数的方法&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;torch&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;abs&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;u&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;而以上所提及的$L_{1}$范数与$L_{2}$范数都是$L_{p}$范数的特例：
-$$
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;而以上所提及的$L_{1}$范数与$L_{2}$范数都是$L_{p}$范数的特例：&lt;/p&gt;
+&lt;p&gt;$$
 |\mathbf{x}|&lt;em&gt;p = \left( \sum&lt;/em&gt;{i=1}^{n} |x_i|^p \right)^{1/p}
 \tag{2.3.16}
-$$
-同时，我们还给出Frobenius范数，这个范数是矩阵的元素平方和的平方根，就好像是矩阵的$L_{2}$范数：
-$$
+$$&lt;/p&gt;
+&lt;p&gt;同时，我们还给出Frobenius范数，这个范数是矩阵的元素平方和的平方根，就好像是矩阵的$L_{2}$范数：&lt;/p&gt;
+&lt;p&gt;$$
 |\mathbf{X}|&lt;em&gt;F = \sqrt{ \sum&lt;/em&gt;{i=1}^{m} \sum_{j=1}^{n} x_{ij}^2 }
 \tag{2.3.17}
-$$
-想要求解Frobenius范数也很简单：&lt;/p&gt;
+$$&lt;/p&gt;
+&lt;p&gt;想要求解Frobenius范数也很简单：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;torch&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;norm&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Mat&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;范数和目标
 在深度学习中，我们经常试图解决优化问题：最大化分配给观测数据的概率; 最小化预测和真实观测之间的距离。用向量表示物品（如单词、产品或新闻文章），以便最小化相似项目之间的距离，最大化不同项目之间的距离。目标，或许是深度学习算法最重要的组成部分（除了数据），通常被表达为范数。&lt;/p&gt;
@@ -201,33 +201,33 @@ $$&lt;/p&gt;
 \frac{\partial y_n}{\partial x_1} &amp;amp; \cdots &amp;amp; \frac{\partial y_n}{\partial x_n}
 \end{bmatrix}
 \in \mathbb{R}^{n \times n}
-$$
-这是一个 &lt;strong&gt;Jacobian（雅可比矩阵）&lt;/strong&gt;，而不是一个简单的向量。
+$$&lt;/p&gt;
+&lt;p&gt;这是一个 &lt;strong&gt;Jacobian（雅可比矩阵）&lt;/strong&gt;，而不是一个简单的向量。
 所以如果我们不指定维度的话，pytorch就不知道以什么方向微分。&lt;/p&gt;
 &lt;h2 id=&#34;3线性神经网络&#34;&gt;3.线性神经网络
 &lt;/h2&gt;&lt;h3 id=&#34;线性回归&#34;&gt;线性回归：
 &lt;/h3&gt;&lt;h4 id=&#34;一些术语&#34;&gt;一些术语：
 &lt;/h4&gt;&lt;p&gt;在机器学习的术语中，该数据集称为训练数据集（training data set）或训练集（training set）。每行数据（比如一次房屋交易相对应的数据）称为样本（sample），也可以称为数据点（datapoint）或数据样本（data instance）。我们把试图预测的目标（比如预测房屋价格）称为标（label）或目
 （target）。预测所依据的自变量（面积和房龄）称为特征（feature）或协变量（covariate）。&lt;/p&gt;
-&lt;p&gt;在机器学习领域，我们通常使用的是高维数据集，建模时采用线性代数表示法会比较方便。当我们的输入包含 ( d ) 个特征时，我们将预测结果（通常使用“尖角”符号表示 ( y ) 的估计值）表示为：
-$$
+&lt;p&gt;在机器学习领域，我们通常使用的是高维数据集，建模时采用线性代数表示法会比较方便。当我们的输入包含 ( d ) 个特征时，我们将预测结果（通常使用“尖角”符号表示 ( y ) 的估计值）表示为：&lt;/p&gt;
+&lt;p&gt;$$
 \hat{y} = w_1 x_1 + \cdots + w_d x_d + b
 \tag{3.1.2}
 $$&lt;/p&gt;
-&lt;p&gt;将所有特征放到向量 ( $\mathbf{x} \in \mathbb{R}^d$) 中，并将所有权重放到向量 ( $\mathbf{w} \in \mathbb{R}^d$) 中，我们可以用点积形式来简洁地表达模型：
-$$
+&lt;p&gt;将所有特征放到向量 ( $\mathbf{x} \in \mathbb{R}^d$) 中，并将所有权重放到向量 ( $\mathbf{w} \in \mathbb{R}^d$) 中，我们可以用点积形式来简洁地表达模型：&lt;/p&gt;
+&lt;p&gt;$$
 \hat{y} = \mathbf{w}^\top \mathbf{x} + b
 \tag{3.1.3}
 $$&lt;/p&gt;
 &lt;p&gt;在 (3.1.3) 中，向量 $\mathbf{x}$对应于单个数据样本的特征。用符号表示的矩阵 $\mathbf{X} \in \mathbb{R}^{n \times d}$ 可以很方便地引用我们整个数据集的 (n)个样本。其中， $\mathbf{x}$的每一行是一个样本，每一列是一种特征。
-对于特征集合 $\mathbf{x}$，预测值 $\hat{\mathbf{y}} \in \mathbb{R}^n$可以通过矩阵-向量乘法表示为：
-$$
+对于特征集合 $\mathbf{x}$，预测值 $\hat{\mathbf{y}} \in \mathbb{R}^n$可以通过矩阵-向量乘法表示为：&lt;/p&gt;
+&lt;p&gt;$$
 \hat{\mathbf{y}} = \mathbf{X} \mathbf{w} + b
 \tag{3.1.4}
-$$
-那么到目前为止，我们已经有了预期的模型形式，我们现在还需要两件事：模型质量的度量方式和更新模型以提高质量的方法。
-对于度量方式，我们提出损失函数(loss function):
-$$
+$$&lt;/p&gt;
+&lt;p&gt;那么到目前为止，我们已经有了预期的模型形式，我们现在还需要两件事：模型质量的度量方式和更新模型以提高质量的方法。
+对于度量方式，我们提出损失函数(loss function):&lt;/p&gt;
+&lt;p&gt;$$
 l^{(i)}(\mathbf{w}, b) = \frac{1}{2} \left( \hat{y}^{(i)} - y^{(i)} \right)^2
 $$&lt;/p&gt;
 &lt;p&gt;为了衡量在整个数据集上的损失，我们对loss取均值，获得均方误差(MSE):&lt;/p&gt;
@@ -237,8 +237,8 @@ $$&lt;/p&gt;
 &lt;p&gt;所以我们的目的其实是：&lt;/p&gt;
 &lt;p&gt;$$
 \mathbf{w}^&lt;em&gt;, b^&lt;/em&gt; = \mathop{\arg\min}_{\mathbf{w}, b} L(\mathbf{w}, b)
-$$
-对于更新模型，我们采用梯度下降：
+$$&lt;/p&gt;
+&lt;p&gt;对于更新模型，我们采用梯度下降：
 梯度下降最简单的用法是计算损失函数（数据集中所有样本的损失均值）关于模型参数的导数（在这里也可以称为梯度）。但实际中的执行可能会非常慢：因为在每一次更新参数之前，我们必须遍历整个数据集。因此，我们通常会在每次需要计算更新的时候随机抽取一小批样本，这种变体叫做
 &lt;strong&gt;小批量随机梯度下降（minibatchstochastic gradient descent）。&lt;/strong&gt;
 &lt;strong&gt;权重向量更新公式：&lt;/strong&gt;&lt;/p&gt;
@@ -248,8 +248,8 @@ $$&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;偏置更新公式：&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;$$
 b \leftarrow b - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \left( \mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)} \right)
-$$
-在上式中，$\eta$是学习率，$\mathcal{B}$是每一个小批量的数据个数，也叫batch size，这两个是超参数，是&lt;strong&gt;手动调整&lt;/strong&gt;的。
+$$&lt;/p&gt;
+&lt;p&gt;在上式中，$\eta$是学习率，$\mathcal{B}$是每一个小批量的数据个数，也叫batch size，这两个是超参数，是&lt;strong&gt;手动调整&lt;/strong&gt;的。
 我们可以通过高斯噪声正态分布和极大似然估计来证明MSE的合理性，但本笔记不多赘述。我在证明过程中发现了一个ϵ，这有点意思：它 在推理或采样中才显式出现
 如果你是搞&lt;strong&gt;贝叶斯建模&lt;/strong&gt;或&lt;strong&gt;生成模型&lt;/strong&gt;，比如：&lt;/p&gt;
 &lt;ul&gt;
@@ -293,11 +293,11 @@ $$
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;n&#34;&gt;l&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;loss&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;net&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;features&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;labels&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;epoch &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;epoch&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;, loss &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;l&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;softmax回归&#34;&gt;Softmax回归：
-&lt;/h3&gt;&lt;p&gt;softmax回归解决的是分类问题，它也是一种单层神经网络，输出层同样是全连接层。
-$$
+&lt;/h3&gt;&lt;p&gt;softmax回归解决的是分类问题，它也是一种单层神经网络，输出层同样是全连接层。&lt;/p&gt;
+&lt;p&gt;$$
 \hat{\mathbf{y}} = \text{softmax}(\mathbf{o}), \quad \text{其中} \quad \hat{y}_j = \frac{\exp(o_j)}{\sum_k \exp(o_k)}
-$$
-softmax运算获取一个向量并将其映射为概率。
+$$&lt;/p&gt;
+&lt;p&gt;softmax运算获取一个向量并将其映射为概率。
 在此部分我们仍然有小批量处理，他大大提高了mv运算。&lt;/p&gt;
 &lt;h4 id=&#34;交叉熵损失函数&#34;&gt;交叉熵损失函数
 &lt;/h4&gt;&lt;p&gt;$$
@@ -462,16 +462,16 @@ $$&lt;/p&gt;
 &lt;/ul&gt;
 &lt;h4 id=&#34;正则化&#34;&gt;正则化
 &lt;/h4&gt;&lt;p&gt;权重衰减是最广泛应用的正则化方法，通常也被称为$L_{2}$正则化。
-为了惩罚权重向量的大小，我们必须以某种方式在损失函数中添加∥w∥2，但是模型应该如何平衡这个新的额外惩罚的损失？实际上，我们通过正则化常数λ来描述这种权衡，这是一个非负超参数，我们使用验证数据拟合：
-$$
+为了惩罚权重向量的大小，我们必须以某种方式在损失函数中添加∥w∥2，但是模型应该如何平衡这个新的额外惩罚的损失？实际上，我们通过正则化常数λ来描述这种权衡，这是一个非负超参数，我们使用验证数据拟合：&lt;/p&gt;
+&lt;p&gt;$$
 L(\mathbf{w}, b) + \frac{\lambda}{2} |\mathbf{w}|^2
-$$
-我们采用$L_{2}$范数主要是因为$L_{2}$正则分布构成经典的岭回归，这使得我们的学习算法偏向于在大量特征上均匀分布权重的模型。
-所以我们有了新的SGD：
-$$
+$$&lt;/p&gt;
+&lt;p&gt;我们采用$L_{2}$范数主要是因为$L_{2}$正则分布构成经典的岭回归，这使得我们的学习算法偏向于在大量特征上均匀分布权重的模型。
+所以我们有了新的SGD：&lt;/p&gt;
+&lt;p&gt;$$
 \mathbf{w} \leftarrow (1 - \eta \lambda) \mathbf{w} - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \mathbf{x}^{(i)} \left( \mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)} \right)
-$$
-此$\lambda$也是超参数。&lt;/p&gt;
+$$&lt;/p&gt;
+&lt;p&gt;此$\lambda$也是超参数。&lt;/p&gt;
 &lt;h4 id=&#34;暂退法&#34;&gt;暂退法
 &lt;/h4&gt;&lt;p&gt;暂退法在前向传播过程中，计算每一内部层的同时丢弃一些神经元。用来避免过拟合&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;net&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;nn&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Sequential&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;nn&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Flatten&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt;

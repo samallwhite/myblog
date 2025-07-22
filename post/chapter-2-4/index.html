@@ -214,8 +214,8 @@
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">X</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
 </span></span><span class="line"><span class="cl"><span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">outputs</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
 </span></span></code></pre></div><h3 id="一些线代知识">一些线代知识：
-</h3><p>首先，我们介绍Hadamard积(⊙)：
-$$
+</h3><p>首先，我们介绍Hadamard积(⊙)：</p>
+<p>$$
 \mathbf{A} ⊙\mathbf{B} =
 \begin{bmatrix}
 a_{11}b_{11} &amp; a_{12}b_{12} &amp; \cdots &amp; a_{1n}b_{1n} \
@@ -223,8 +223,8 @@ a_{21}b_{21} &amp; a_{22}b_{22} &amp; \cdots &amp; a_{2n}b_{2n} \
 \vdots       &amp; \vdots       &amp; \ddots &amp; \vdots       \
 a_{m1}b_{m1} &amp; a_{m2}b_{m2} &amp; \cdots &amp; a_{mn}b_{mn}
 \end{bmatrix}
-$$
-该Hadamard积可以表示为：</p>
+$$</p>
+<p>该Hadamard积可以表示为：</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">A</span> <span class="o">*</span> <span class="n">B</span>
 </span></span></code></pre></div><p>接下来是降维操作，我们所指的降维操作是通过求和形式来实现的，就像刚才所提到的sum一样，我们同样使用sum，不过多了一些参数：</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">A_sum_axis0</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">#对第0轴求和</span>
@@ -286,32 +286,32 @@ $$</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">mm</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
 </span></span></code></pre></div><p><strong>范数(norm)</strong>：
 这个比较屌，也比较重要
-我们首先说一下$L_{2}$范数，其实这个范数就是此前学到的向量的模：
-$$
+我们首先说一下$L_{2}$范数，其实这个范数就是此前学到的向量的模：</p>
+<p>$$
 |\mathbf{x}|<em>2 = \sqrt{ \sum</em>{i=1}^n x_i^2 }
 \tag{2.3.14}
-$$
-对于$L_{2}$范数，通常省略$L$：</p>
+$$</p>
+<p>对于$L_{2}$范数，通常省略$L$：</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-</span></span></code></pre></div><p>与此同时，我们还有$L_{1}$范数：
-$$
+</span></span></code></pre></div><p>与此同时，我们还有$L_{1}$范数：</p>
+<p>$$
 |\mathbf{x}|<em>1 = \sum</em>{i=1}^n |x_i|
 \tag{2.3.15}
-$$
-与$L_{2}$范数相比，$L_{1}$范数受异常值的影响较小：</p>
+$$</p>
+<p>与$L_{2}$范数相比，$L_{1}$范数受异常值的影响较小：</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1">#我们没有可以直接计算L1范数的方法</span>
 </span></span><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">u</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-</span></span></code></pre></div><p>而以上所提及的$L_{1}$范数与$L_{2}$范数都是$L_{p}$范数的特例：
-$$
+</span></span></code></pre></div><p>而以上所提及的$L_{1}$范数与$L_{2}$范数都是$L_{p}$范数的特例：</p>
+<p>$$
 |\mathbf{x}|<em>p = \left( \sum</em>{i=1}^{n} |x_i|^p \right)^{1/p}
 \tag{2.3.16}
-$$
-同时，我们还给出Frobenius范数，这个范数是矩阵的元素平方和的平方根，就好像是矩阵的$L_{2}$范数：
-$$
+$$</p>
+<p>同时，我们还给出Frobenius范数，这个范数是矩阵的元素平方和的平方根，就好像是矩阵的$L_{2}$范数：</p>
+<p>$$
 |\mathbf{X}|<em>F = \sqrt{ \sum</em>{i=1}^{m} \sum_{j=1}^{n} x_{ij}^2 }
 \tag{2.3.17}
-$$
-想要求解Frobenius范数也很简单：</p>
+$$</p>
+<p>想要求解Frobenius范数也很简单：</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">Mat</span><span class="p">)</span>
 </span></span></code></pre></div><p>范数和目标
 在深度学习中，我们经常试图解决优化问题：最大化分配给观测数据的概率; 最小化预测和真实观测之间的距离。用向量表示物品（如单词、产品或新闻文章），以便最小化相似项目之间的距离，最大化不同项目之间的距离。目标，或许是深度学习算法最重要的组成部分（除了数据），通常被表达为范数。</p>
@@ -354,33 +354,33 @@ $$</p>
 \frac{\partial y_n}{\partial x_1} &amp; \cdots &amp; \frac{\partial y_n}{\partial x_n}
 \end{bmatrix}
 \in \mathbb{R}^{n \times n}
-$$
-这是一个 <strong>Jacobian（雅可比矩阵）</strong>，而不是一个简单的向量。
+$$</p>
+<p>这是一个 <strong>Jacobian（雅可比矩阵）</strong>，而不是一个简单的向量。
 所以如果我们不指定维度的话，pytorch就不知道以什么方向微分。</p>
 <h2 id="3线性神经网络">3.线性神经网络
 </h2><h3 id="线性回归">线性回归：
 </h3><h4 id="一些术语">一些术语：
 </h4><p>在机器学习的术语中，该数据集称为训练数据集（training data set）或训练集（training set）。每行数据（比如一次房屋交易相对应的数据）称为样本（sample），也可以称为数据点（datapoint）或数据样本（data instance）。我们把试图预测的目标（比如预测房屋价格）称为标（label）或目
 （target）。预测所依据的自变量（面积和房龄）称为特征（feature）或协变量（covariate）。</p>
-<p>在机器学习领域，我们通常使用的是高维数据集，建模时采用线性代数表示法会比较方便。当我们的输入包含 ( d ) 个特征时，我们将预测结果（通常使用“尖角”符号表示 ( y ) 的估计值）表示为：
-$$
+<p>在机器学习领域，我们通常使用的是高维数据集，建模时采用线性代数表示法会比较方便。当我们的输入包含 ( d ) 个特征时，我们将预测结果（通常使用“尖角”符号表示 ( y ) 的估计值）表示为：</p>
+<p>$$
 \hat{y} = w_1 x_1 + \cdots + w_d x_d + b
 \tag{3.1.2}
 $$</p>
-<p>将所有特征放到向量 ( $\mathbf{x} \in \mathbb{R}^d$) 中，并将所有权重放到向量 ( $\mathbf{w} \in \mathbb{R}^d$) 中，我们可以用点积形式来简洁地表达模型：
-$$
+<p>将所有特征放到向量 ( $\mathbf{x} \in \mathbb{R}^d$) 中，并将所有权重放到向量 ( $\mathbf{w} \in \mathbb{R}^d$) 中，我们可以用点积形式来简洁地表达模型：</p>
+<p>$$
 \hat{y} = \mathbf{w}^\top \mathbf{x} + b
 \tag{3.1.3}
 $$</p>
 <p>在 (3.1.3) 中，向量 $\mathbf{x}$对应于单个数据样本的特征。用符号表示的矩阵 $\mathbf{X} \in \mathbb{R}^{n \times d}$ 可以很方便地引用我们整个数据集的 (n)个样本。其中， $\mathbf{x}$的每一行是一个样本，每一列是一种特征。
-对于特征集合 $\mathbf{x}$，预测值 $\hat{\mathbf{y}} \in \mathbb{R}^n$可以通过矩阵-向量乘法表示为：
-$$
+对于特征集合 $\mathbf{x}$，预测值 $\hat{\mathbf{y}} \in \mathbb{R}^n$可以通过矩阵-向量乘法表示为：</p>
+<p>$$
 \hat{\mathbf{y}} = \mathbf{X} \mathbf{w} + b
 \tag{3.1.4}
-$$
-那么到目前为止，我们已经有了预期的模型形式，我们现在还需要两件事：模型质量的度量方式和更新模型以提高质量的方法。
-对于度量方式，我们提出损失函数(loss function):
-$$
+$$</p>
+<p>那么到目前为止，我们已经有了预期的模型形式，我们现在还需要两件事：模型质量的度量方式和更新模型以提高质量的方法。
+对于度量方式，我们提出损失函数(loss function):</p>
+<p>$$
 l^{(i)}(\mathbf{w}, b) = \frac{1}{2} \left( \hat{y}^{(i)} - y^{(i)} \right)^2
 $$</p>
 <p>为了衡量在整个数据集上的损失，我们对loss取均值，获得均方误差(MSE):</p>
@@ -390,8 +390,8 @@ $$</p>
 <p>所以我们的目的其实是：</p>
 <p>$$
 \mathbf{w}^<em>, b^</em> = \mathop{\arg\min}_{\mathbf{w}, b} L(\mathbf{w}, b)
-$$
-对于更新模型，我们采用梯度下降：
+$$</p>
+<p>对于更新模型，我们采用梯度下降：
 梯度下降最简单的用法是计算损失函数（数据集中所有样本的损失均值）关于模型参数的导数（在这里也可以称为梯度）。但实际中的执行可能会非常慢：因为在每一次更新参数之前，我们必须遍历整个数据集。因此，我们通常会在每次需要计算更新的时候随机抽取一小批样本，这种变体叫做
 <strong>小批量随机梯度下降（minibatchstochastic gradient descent）。</strong>
 <strong>权重向量更新公式：</strong></p>
@@ -401,8 +401,8 @@ $$</p>
 <p><strong>偏置更新公式：</strong></p>
 <p>$$
 b \leftarrow b - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \left( \mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)} \right)
-$$
-在上式中，$\eta$是学习率，$\mathcal{B}$是每一个小批量的数据个数，也叫batch size，这两个是超参数，是<strong>手动调整</strong>的。
+$$</p>
+<p>在上式中，$\eta$是学习率，$\mathcal{B}$是每一个小批量的数据个数，也叫batch size，这两个是超参数，是<strong>手动调整</strong>的。
 我们可以通过高斯噪声正态分布和极大似然估计来证明MSE的合理性，但本笔记不多赘述。我在证明过程中发现了一个ϵ，这有点意思：它 在推理或采样中才显式出现
 如果你是搞<strong>贝叶斯建模</strong>或<strong>生成模型</strong>，比如：</p>
 <ul>
@@ -446,11 +446,11 @@ $$
 </span></span><span class="line"><span class="cl">	<span class="n">l</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">net</span><span class="p">(</span><span class="n">features</span><span class="p">),</span> <span class="n">labels</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">	<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;epoch </span><span class="si">{</span><span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s1">, loss </span><span class="si">{</span><span class="n">l</span><span class="si">:</span><span class="s1">f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </span></span></code></pre></div><h3 id="softmax回归">Softmax回归：
-</h3><p>softmax回归解决的是分类问题，它也是一种单层神经网络，输出层同样是全连接层。
-$$
+</h3><p>softmax回归解决的是分类问题，它也是一种单层神经网络，输出层同样是全连接层。</p>
+<p>$$
 \hat{\mathbf{y}} = \text{softmax}(\mathbf{o}), \quad \text{其中} \quad \hat{y}_j = \frac{\exp(o_j)}{\sum_k \exp(o_k)}
-$$
-softmax运算获取一个向量并将其映射为概率。
+$$</p>
+<p>softmax运算获取一个向量并将其映射为概率。
 在此部分我们仍然有小批量处理，他大大提高了mv运算。</p>
 <h4 id="交叉熵损失函数">交叉熵损失函数
 </h4><p>$$
@@ -615,16 +615,16 @@ $$</p>
 </ul>
 <h4 id="正则化">正则化
 </h4><p>权重衰减是最广泛应用的正则化方法，通常也被称为$L_{2}$正则化。
-为了惩罚权重向量的大小，我们必须以某种方式在损失函数中添加∥w∥2，但是模型应该如何平衡这个新的额外惩罚的损失？实际上，我们通过正则化常数λ来描述这种权衡，这是一个非负超参数，我们使用验证数据拟合：
-$$
+为了惩罚权重向量的大小，我们必须以某种方式在损失函数中添加∥w∥2，但是模型应该如何平衡这个新的额外惩罚的损失？实际上，我们通过正则化常数λ来描述这种权衡，这是一个非负超参数，我们使用验证数据拟合：</p>
+<p>$$
 L(\mathbf{w}, b) + \frac{\lambda}{2} |\mathbf{w}|^2
-$$
-我们采用$L_{2}$范数主要是因为$L_{2}$正则分布构成经典的岭回归，这使得我们的学习算法偏向于在大量特征上均匀分布权重的模型。
-所以我们有了新的SGD：
-$$
+$$</p>
+<p>我们采用$L_{2}$范数主要是因为$L_{2}$正则分布构成经典的岭回归，这使得我们的学习算法偏向于在大量特征上均匀分布权重的模型。
+所以我们有了新的SGD：</p>
+<p>$$
 \mathbf{w} \leftarrow (1 - \eta \lambda) \mathbf{w} - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \mathbf{x}^{(i)} \left( \mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)} \right)
-$$
-此$\lambda$也是超参数。</p>
+$$</p>
+<p>此$\lambda$也是超参数。</p>
 <h4 id="暂退法">暂退法
 </h4><p>暂退法在前向传播过程中，计算每一内部层的同时丢弃一些神经元。用来避免过拟合</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">net</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(),</span>
