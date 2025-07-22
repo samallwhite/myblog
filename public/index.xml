@@ -8,10 +8,10 @@
         <language>zh-cn</language>
         <lastBuildDate>Sat, 19 Jul 2025 20:00:00 +0800</lastBuildDate><atom:link href="https://samallwhite.github.io/myblog/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>动手学深度学习Pytorch(2-4章)</title>
-        <link>https://samallwhite.github.io/myblog/posts/chapter-2-4/</link>
+        <link>https://samallwhite.github.io/myblog/post/chapter-2-4/</link>
         <pubDate>Sat, 19 Jul 2025 20:00:00 +0800</pubDate>
         
-        <guid>https://samallwhite.github.io/myblog/posts/chapter-2-4/</guid>
+        <guid>https://samallwhite.github.io/myblog/post/chapter-2-4/</guid>
         <description>&lt;p&gt;这是我第一篇博客。主播只用了2h看完了三章内容，想必是非常的不精的，于是整理一下。。。&lt;/p&gt;
 &lt;h1 id=&#34;2-预备知识&#34;&gt;2 预备知识
 &lt;/h1&gt;&lt;p&gt;本部分主要讲解了一些pytorch的基本操作和一些数学知识：&lt;/p&gt;
@@ -450,7 +450,7 @@ $$&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;batch_size, lr, num_epochs &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;256&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;loss &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; nn&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;CrossEntropyLoss(reduction&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;none&amp;#39;&lt;/span&gt;)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;trainer &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; torch&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;optim&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;SGD(net&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;parameters(), lr&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;lr)
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;!-- raw HTML omitted --&gt;目前为止，我们已经可以总结出训练一个模型的基本流程了&lt;!-- raw HTML omitted --&gt;[[train_mlp_pytorch]]&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;font color=&#34;#ff0000&#34;&gt;目前为止，我们已经可以总结出训练一个模型的基本流程了&lt;/font&gt;[[train_mlp_pytorch]]&lt;/p&gt;
 &lt;h3 id=&#34;对于模型的调整&#34;&gt;对于模型的调整
 &lt;/h3&gt;&lt;ul&gt;
 &lt;li&gt;我们指出，训练可能会导致过拟合，也就是训练误差降低而泛化误差升高。&lt;/li&gt;
