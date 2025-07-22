@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="主播只用了2h看完了三章内容，想必是非常的不精的，于是整理一下。。。\n2 预备知识 本部分主要讲解了一些pytorch的基本操作和一些数学知识：\nTensor的初始化和一些特征 初始化张量：\nA = torch.tensor([[1,2,3],[4,5,6]]) 好了，我们现在已经会创造tensor了，我们接下来应该尝试着去得到一些关于这个tensor的信息： 首先值得提及的是python自身的len()方法同样适用，但该方法只能显示第0轴的尺寸信息：\nlen(A) 2 所以其实这玩意挺垃圾，我们需要用高级方法：shape\nA.shape torch.Size([2,3]) 我们可以通过使用reshape()方法改变张量的结构：\na = A.reshape(3,2) tensor([[1,2],[3,4],[5,6]]) 像tensorflow一样，我们可以搞ones、zeros等东西：\nzero_tensor = torch.zero((2,3)) one_tensor = torch.ones((2,3)) 生成随机张量：\nrandom_tensor = torch.randn((2,3)) btw，这个随机是从正态分布中随机抽样的\nTensor的一些运算： 基本的运算没啥区别，我们特别说一下连接(concatenate)\nX = torch.arange(12, dtype=torch.float32).reshape((3,4)) Y = torch.tensor([[2.0, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]]) torch.cat((X, Y), dim=0), torch.cat((X, Y), dim=1) (tensor([[ 0., 1., 2., 3.], [ 4., 5., 6., 7.], [ 8., 9., 10., 11.], [ 2., 1., 4., 3.], [ 1., 2., 3., 4.], [ 4., 3., 2., 1.]]), tensor([[ 0., 1., 2., 3., 2., 1., 4., 3.], [ 4., 5., 6., 7., 1., 2., 3., 4.], [ 8., 9., 10., 11., 4., 3., 2., 1.]])) 求和：\n">
-<title></title>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="这是我第一篇博客。主播只用了2h看完了三章内容，想必是非常的不精的，于是整理一下。。。\n2 预备知识 本部分主要讲解了一些pytorch的基本操作和一些数学知识：\nTensor的初始化和一些特征 初始化张量：\nA = torch.tensor([[1,2,3],[4,5,6]]) 好了，我们现在已经会创造tensor了，我们接下来应该尝试着去得到一些关于这个tensor的信息： 首先值得提及的是python自身的len()方法同样适用，但该方法只能显示第0轴的尺寸信息：\nlen(A) 2 所以其实这玩意挺垃圾，我们需要用高级方法：shape\nA.shape torch.Size([2,3]) 我们可以通过使用reshape()方法改变张量的结构：\na = A.reshape(3,2) tensor([[1,2],[3,4],[5,6]]) 像tensorflow一样，我们可以搞ones、zeros等东西：\nzero_tensor = torch.zero((2,3)) one_tensor = torch.ones((2,3)) 生成随机张量：\nrandom_tensor = torch.randn((2,3)) btw，这个随机是从正态分布中随机抽样的\nTensor的一些运算： 基本的运算没啥区别，我们特别说一下连接(concatenate)\nX = torch.arange(12, dtype=torch.float32).reshape((3,4)) Y = torch.tensor([[2.0, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]]) torch.cat((X, Y), dim=0), torch.cat((X, Y), dim=1) (tensor([[ 0., 1., 2., 3.], [ 4., 5., 6., 7.], [ 8., 9., 10., 11.], [ 2., 1., 4., 3.], [ 1., 2., 3., 4.], [ 4., 3., 2., 1.]]), tensor([[ 0., 1., 2., 3., 2., 1., 4., 3.], [ 4., 5., 6., 7., 1., 2., 3., 4.], [ 8., 9., 10., 11., 4., 3., 2., 1.]])) 求和：\n">
+<title>动手学深度学习Pytorch(2-4章)</title>
 
-<link rel='canonical' href='https://samallwhite.github.io/myblog/chapter-2-4/'>
+<link rel='canonical' href='https://samallwhite.github.io/myblog/posts/chapter-2-4/'>
 
-<link rel="stylesheet" href="/myblog/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css"><meta property='og:title' content="">
-<meta property='og:description' content="主播只用了2h看完了三章内容，想必是非常的不精的，于是整理一下。。。\n2 预备知识 本部分主要讲解了一些pytorch的基本操作和一些数学知识：\nTensor的初始化和一些特征 初始化张量：\nA = torch.tensor([[1,2,3],[4,5,6]]) 好了，我们现在已经会创造tensor了，我们接下来应该尝试着去得到一些关于这个tensor的信息： 首先值得提及的是python自身的len()方法同样适用，但该方法只能显示第0轴的尺寸信息：\nlen(A) 2 所以其实这玩意挺垃圾，我们需要用高级方法：shape\nA.shape torch.Size([2,3]) 我们可以通过使用reshape()方法改变张量的结构：\na = A.reshape(3,2) tensor([[1,2],[3,4],[5,6]]) 像tensorflow一样，我们可以搞ones、zeros等东西：\nzero_tensor = torch.zero((2,3)) one_tensor = torch.ones((2,3)) 生成随机张量：\nrandom_tensor = torch.randn((2,3)) btw，这个随机是从正态分布中随机抽样的\nTensor的一些运算： 基本的运算没啥区别，我们特别说一下连接(concatenate)\nX = torch.arange(12, dtype=torch.float32).reshape((3,4)) Y = torch.tensor([[2.0, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]]) torch.cat((X, Y), dim=0), torch.cat((X, Y), dim=1) (tensor([[ 0., 1., 2., 3.], [ 4., 5., 6., 7.], [ 8., 9., 10., 11.], [ 2., 1., 4., 3.], [ 1., 2., 3., 4.], [ 4., 3., 2., 1.]]), tensor([[ 0., 1., 2., 3., 2., 1., 4., 3.], [ 4., 5., 6., 7., 1., 2., 3., 4.], [ 8., 9., 10., 11., 4., 3., 2., 1.]])) 求和：\n">
-<meta property='og:url' content='https://samallwhite.github.io/myblog/chapter-2-4/'>
+<link rel="stylesheet" href="/myblog/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css"><meta property='og:title' content="动手学深度学习Pytorch(2-4章)">
+<meta property='og:description' content="这是我第一篇博客。主播只用了2h看完了三章内容，想必是非常的不精的，于是整理一下。。。\n2 预备知识 本部分主要讲解了一些pytorch的基本操作和一些数学知识：\nTensor的初始化和一些特征 初始化张量：\nA = torch.tensor([[1,2,3],[4,5,6]]) 好了，我们现在已经会创造tensor了，我们接下来应该尝试着去得到一些关于这个tensor的信息： 首先值得提及的是python自身的len()方法同样适用，但该方法只能显示第0轴的尺寸信息：\nlen(A) 2 所以其实这玩意挺垃圾，我们需要用高级方法：shape\nA.shape torch.Size([2,3]) 我们可以通过使用reshape()方法改变张量的结构：\na = A.reshape(3,2) tensor([[1,2],[3,4],[5,6]]) 像tensorflow一样，我们可以搞ones、zeros等东西：\nzero_tensor = torch.zero((2,3)) one_tensor = torch.ones((2,3)) 生成随机张量：\nrandom_tensor = torch.randn((2,3)) btw，这个随机是从正态分布中随机抽样的\nTensor的一些运算： 基本的运算没啥区别，我们特别说一下连接(concatenate)\nX = torch.arange(12, dtype=torch.float32).reshape((3,4)) Y = torch.tensor([[2.0, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]]) torch.cat((X, Y), dim=0), torch.cat((X, Y), dim=1) (tensor([[ 0., 1., 2., 3.], [ 4., 5., 6., 7.], [ 8., 9., 10., 11.], [ 2., 1., 4., 3.], [ 1., 2., 3., 4.], [ 4., 3., 2., 1.]]), tensor([[ 0., 1., 2., 3., 2., 1., 4., 3.], [ 4., 5., 6., 7., 1., 2., 3., 4.], [ 8., 9., 10., 11., 4., 3., 2., 1.]])) 求和：\n">
+<meta property='og:url' content='https://samallwhite.github.io/myblog/posts/chapter-2-4/'>
 <meta property='og:site_name' content='我的博客'>
-<meta property='og:type' content='article'><meta property='article:section' content='' />
-<meta name="twitter:title" content="">
-<meta name="twitter:description" content="主播只用了2h看完了三章内容，想必是非常的不精的，于是整理一下。。。\n2 预备知识 本部分主要讲解了一些pytorch的基本操作和一些数学知识：\nTensor的初始化和一些特征 初始化张量：\nA = torch.tensor([[1,2,3],[4,5,6]]) 好了，我们现在已经会创造tensor了，我们接下来应该尝试着去得到一些关于这个tensor的信息： 首先值得提及的是python自身的len()方法同样适用，但该方法只能显示第0轴的尺寸信息：\nlen(A) 2 所以其实这玩意挺垃圾，我们需要用高级方法：shape\nA.shape torch.Size([2,3]) 我们可以通过使用reshape()方法改变张量的结构：\na = A.reshape(3,2) tensor([[1,2],[3,4],[5,6]]) 像tensorflow一样，我们可以搞ones、zeros等东西：\nzero_tensor = torch.zero((2,3)) one_tensor = torch.ones((2,3)) 生成随机张量：\nrandom_tensor = torch.randn((2,3)) btw，这个随机是从正态分布中随机抽样的\nTensor的一些运算： 基本的运算没啥区别，我们特别说一下连接(concatenate)\nX = torch.arange(12, dtype=torch.float32).reshape((3,4)) Y = torch.tensor([[2.0, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]]) torch.cat((X, Y), dim=0), torch.cat((X, Y), dim=1) (tensor([[ 0., 1., 2., 3.], [ 4., 5., 6., 7.], [ 8., 9., 10., 11.], [ 2., 1., 4., 3.], [ 1., 2., 3., 4.], [ 4., 3., 2., 1.]]), tensor([[ 0., 1., 2., 3., 2., 1., 4., 3.], [ 4., 5., 6., 7., 1., 2., 3., 4.], [ 8., 9., 10., 11., 4., 3., 2., 1.]])) 求和：\n">
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:published_time' content='2025-07-19T20:00:00&#43;08:00'/><meta property='article:modified_time' content='2025-07-19T20:00:00&#43;08:00'/>
+<meta name="twitter:title" content="动手学深度学习Pytorch(2-4章)">
+<meta name="twitter:description" content="这是我第一篇博客。主播只用了2h看完了三章内容，想必是非常的不精的，于是整理一下。。。\n2 预备知识 本部分主要讲解了一些pytorch的基本操作和一些数学知识：\nTensor的初始化和一些特征 初始化张量：\nA = torch.tensor([[1,2,3],[4,5,6]]) 好了，我们现在已经会创造tensor了，我们接下来应该尝试着去得到一些关于这个tensor的信息： 首先值得提及的是python自身的len()方法同样适用，但该方法只能显示第0轴的尺寸信息：\nlen(A) 2 所以其实这玩意挺垃圾，我们需要用高级方法：shape\nA.shape torch.Size([2,3]) 我们可以通过使用reshape()方法改变张量的结构：\na = A.reshape(3,2) tensor([[1,2],[3,4],[5,6]]) 像tensorflow一样，我们可以搞ones、zeros等东西：\nzero_tensor = torch.zero((2,3)) one_tensor = torch.ones((2,3)) 生成随机张量：\nrandom_tensor = torch.randn((2,3)) btw，这个随机是从正态分布中随机抽样的\nTensor的一些运算： 基本的运算没啥区别，我们特别说一下连接(concatenate)\nX = torch.arange(12, dtype=torch.float32).reshape((3,4)) Y = torch.tensor([[2.0, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]]) torch.cat((X, Y), dim=0), torch.cat((X, Y), dim=1) (tensor([[ 0., 1., 2., 3.], [ 4., 5., 6., 7.], [ 8., 9., 10., 11.], [ 2., 1., 4., 3.], [ 1., 2., 3., 4.], [ 4., 3., 2., 1.]]), tensor([[ 0., 1., 2., 3., 2., 1., 4., 3.], [ 4., 5., 6., 7., 1., 2., 3., 4.], [ 8., 9., 10., 11., 4., 3., 2., 1.]])) 求和：\n">
     </head>
     <body class="
     article-page
@@ -113,7 +113,7 @@
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
-            <a href="/myblog/chapter-2-4/"></a>
+            <a href="/myblog/posts/chapter-2-4/">动手学深度学习Pytorch(2-4章)</a>
         </h2>
     
         
@@ -124,6 +124,19 @@
     
     
     <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jul 19, 2025</time>
+            </div>
         
 
         
@@ -152,7 +165,7 @@
     <section class="article-content">
     
     
-    <p>主播只用了2h看完了三章内容，想必是非常的不精的，于是整理一下。。。</p>
+    <p>这是我第一篇博客。主播只用了2h看完了三章内容，想必是非常的不精的，于是整理一下。。。</p>
 <h1 id="2-预备知识">2 预备知识
 </h1><p>本部分主要讲解了一些pytorch的基本操作和一些数学知识：</p>
 <h3 id="tensor的初始化和一些特征">Tensor的初始化和一些特征
@@ -365,9 +378,9 @@ $$
 $$
 那么到目前为止，我们已经有了预期的模型形式，我们现在还需要两件事：模型质量的度量方式和更新模型以提高质量的方法。
 对于度量方式，我们提出损失函数(loss function):
+$$
+l^{(i)}(\mathbf{w}, b) = \frac{1}{2} \left( \hat{y}^{(i)} - y^{(i)} \right)^2
 $$</p>
-<p>l^{(i)}(\mathbf{w}, b) = \frac{1}{2} \left( \hat{y}^{(i)} - y^{(i)} \right)^2</p>
-<p>$$</p>
 <p>为了衡量在整个数据集上的损失，我们对loss取均值，获得均方误差(MSE):</p>
 <p>$$
 L(\mathbf{w}, b) = \frac{1}{n} \sum_{i=1}^{n} \frac{1}{2} \left( \mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)} \right)^2
