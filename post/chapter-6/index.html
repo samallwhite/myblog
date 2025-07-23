@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="这一章主要讲的是传统的卷积神经网络(CNN)。 首先应该注意，CNN包含以下部分： 卷积层、汇聚层(池化层？)， 而一些常用的参数：填充和步幅、通道。\nCNN的概念源自空间不变性的系统化，空间不变性包括：\n平移不变性： 简要来说就是如果一个图像中的某个特征在位置 $(i, j)$出现能被识别，那么它在$(i+1, j+1)$出现也应该能被识别。 局部性 由MLP到CNN 通常情况下，MLP可以用以下公式表示： $$ \\mathbf{H}{i,j} = \\mathbf{U}{i,j} + \\sum_k \\sum_l \\mathbf{W}{i,j,k,l} \\cdot \\mathbf{X}{k,l} = \\mathbf{U}{i,j} + \\sum_a \\sum_b \\mathbf{V}{i,j,a,b} \\cdot \\mathbf{X}_{i+a,j+b} \\tag{1} $$ 由此式我们经过一些变换得到CNN的表示：\n由平移不变性，我们MLP原来的公式中$\\mathbf{V}$是与$i,j$相关的量，也就是说$\\mathbf{V}$是和位置有关的，既然我们平移不变，那我们就可以假设所有位置的$\\mathbf{V}$都是一个相同的值，对于偏置$u$也是同理，于是我们由1式得到下式： $$ \\mathbf{H}{i,j} = u + \\sum_a \\sum_b \\mathbf{V}{a,b} \\cdot \\mathbf{X}_{i+a,j+b}\\tag{2} $$\n接下来我们考虑第二个原则：局部性。也就是在一定范围之外的$\\mathbf{V}$可以被设置为0，于是我们由2式得到下式： $$ \\mathbf{H}{i,j} = u + \\sum{a=-\\Delta}^{\\Delta} \\sum_{b=-\\Delta}^{\\Delta} \\mathbf{V}{a,b} \\cdot \\mathbf{X}{i+a,j+b} \\tag{3} $$ 至此，我们得到了卷积层的数学表述,$\\mathbf{V}$被称为卷积核(convolution kernel)或滤波器(filter)，显然，我们的参数规模大幅减小，但代价是以上所有的学习权重都依赖于归纳偏置，偏置不行就寄寄了。 数学中的卷积 两个函数之间的卷积被定义为： $$ (f * g)(\\mathbf{x}) = \\int f(\\mathbf{z}) g(\\mathbf{x} - \\mathbf{z}) , d\\mathbf{z} \\tag{4} $$\n">
+<title>动手学深度学习Pytorch(6章)</title>
+
+<link rel='canonical' href='https://samallwhite.github.io/myblog/post/chapter-6/'>
+
+<link rel="stylesheet" href="/myblog/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css"><meta property='og:title' content="动手学深度学习Pytorch(6章)">
+<meta property='og:description' content="这一章主要讲的是传统的卷积神经网络(CNN)。 首先应该注意，CNN包含以下部分： 卷积层、汇聚层(池化层？)， 而一些常用的参数：填充和步幅、通道。\nCNN的概念源自空间不变性的系统化，空间不变性包括：\n平移不变性： 简要来说就是如果一个图像中的某个特征在位置 $(i, j)$出现能被识别，那么它在$(i+1, j+1)$出现也应该能被识别。 局部性 由MLP到CNN 通常情况下，MLP可以用以下公式表示： $$ \\mathbf{H}{i,j} = \\mathbf{U}{i,j} + \\sum_k \\sum_l \\mathbf{W}{i,j,k,l} \\cdot \\mathbf{X}{k,l} = \\mathbf{U}{i,j} + \\sum_a \\sum_b \\mathbf{V}{i,j,a,b} \\cdot \\mathbf{X}_{i+a,j+b} \\tag{1} $$ 由此式我们经过一些变换得到CNN的表示：\n由平移不变性，我们MLP原来的公式中$\\mathbf{V}$是与$i,j$相关的量，也就是说$\\mathbf{V}$是和位置有关的，既然我们平移不变，那我们就可以假设所有位置的$\\mathbf{V}$都是一个相同的值，对于偏置$u$也是同理，于是我们由1式得到下式： $$ \\mathbf{H}{i,j} = u + \\sum_a \\sum_b \\mathbf{V}{a,b} \\cdot \\mathbf{X}_{i+a,j+b}\\tag{2} $$\n接下来我们考虑第二个原则：局部性。也就是在一定范围之外的$\\mathbf{V}$可以被设置为0，于是我们由2式得到下式： $$ \\mathbf{H}{i,j} = u + \\sum{a=-\\Delta}^{\\Delta} \\sum_{b=-\\Delta}^{\\Delta} \\mathbf{V}{a,b} \\cdot \\mathbf{X}{i+a,j+b} \\tag{3} $$ 至此，我们得到了卷积层的数学表述,$\\mathbf{V}$被称为卷积核(convolution kernel)或滤波器(filter)，显然，我们的参数规模大幅减小，但代价是以上所有的学习权重都依赖于归纳偏置，偏置不行就寄寄了。 数学中的卷积 两个函数之间的卷积被定义为： $$ (f * g)(\\mathbf{x}) = \\int f(\\mathbf{z}) g(\\mathbf{x} - \\mathbf{z}) , d\\mathbf{z} \\tag{4} $$\n">
+<meta property='og:url' content='https://samallwhite.github.io/myblog/post/chapter-6/'>
+<meta property='og:site_name' content='samallwhite'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-07-19T20:00:00&#43;08:00'/><meta property='article:modified_time' content='2025-07-19T20:00:00&#43;08:00'/>
+<meta name="twitter:title" content="动手学深度学习Pytorch(6章)">
+<meta name="twitter:description" content="这一章主要讲的是传统的卷积神经网络(CNN)。 首先应该注意，CNN包含以下部分： 卷积层、汇聚层(池化层？)， 而一些常用的参数：填充和步幅、通道。\nCNN的概念源自空间不变性的系统化，空间不变性包括：\n平移不变性： 简要来说就是如果一个图像中的某个特征在位置 $(i, j)$出现能被识别，那么它在$(i+1, j+1)$出现也应该能被识别。 局部性 由MLP到CNN 通常情况下，MLP可以用以下公式表示： $$ \\mathbf{H}{i,j} = \\mathbf{U}{i,j} + \\sum_k \\sum_l \\mathbf{W}{i,j,k,l} \\cdot \\mathbf{X}{k,l} = \\mathbf{U}{i,j} + \\sum_a \\sum_b \\mathbf{V}{i,j,a,b} \\cdot \\mathbf{X}_{i+a,j+b} \\tag{1} $$ 由此式我们经过一些变换得到CNN的表示：\n由平移不变性，我们MLP原来的公式中$\\mathbf{V}$是与$i,j$相关的量，也就是说$\\mathbf{V}$是和位置有关的，既然我们平移不变，那我们就可以假设所有位置的$\\mathbf{V}$都是一个相同的值，对于偏置$u$也是同理，于是我们由1式得到下式： $$ \\mathbf{H}{i,j} = u + \\sum_a \\sum_b \\mathbf{V}{a,b} \\cdot \\mathbf{X}_{i+a,j+b}\\tag{2} $$\n接下来我们考虑第二个原则：局部性。也就是在一定范围之外的$\\mathbf{V}$可以被设置为0，于是我们由2式得到下式： $$ \\mathbf{H}{i,j} = u + \\sum{a=-\\Delta}^{\\Delta} \\sum_{b=-\\Delta}^{\\Delta} \\mathbf{V}{a,b} \\cdot \\mathbf{X}{i+a,j+b} \\tag{3} $$ 至此，我们得到了卷积层的数学表述,$\\mathbf{V}$被称为卷积核(convolution kernel)或滤波器(filter)，显然，我们的参数规模大幅减小，但代价是以上所有的学习权重都依赖于归纳偏置，偏置不行就寄寄了。 数学中的卷积 两个函数之间的卷积被定义为： $$ (f * g)(\\mathbf{x}) = \\int f(\\mathbf{z}) g(\\mathbf{x} - \\mathbf{z}) , d\\mathbf{z} \\tag{4} $$\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/myblog/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/myblog/img/avatar_hu_f509edb42ecc0ebd.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/myblog">samallwhite</a></h1>
+            <h2 class="site-description"></h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/myblog/post/chapter-6/">动手学深度学习Pytorch(6章)</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jul 19, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    2 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>这一章主要讲的是传统的卷积神经网络(CNN)。
+首先应该注意，CNN包含以下部分：
+卷积层、汇聚层(池化层？)，
+而一些常用的参数：填充和步幅、通道。</p>
+<p>CNN的概念源自空间不变性的系统化，空间不变性包括：</p>
+<ul>
+<li>平移不变性：
+简要来说就是如果一个图像中的某个特征在位置 $(i, j)$出现能被识别，那么它在$(i+1, j+1)$出现也应该能被识别。</li>
+<li>局部性</li>
+</ul>
+<h2 id="由mlp到cnn">由MLP到CNN
+</h2><p>通常情况下，MLP可以用以下公式表示：
+$$
+\mathbf{H}<em>{i,j} = \mathbf{U}</em>{i,j} + \sum_k \sum_l \mathbf{W}<em>{i,j,k,l} \cdot \mathbf{X}</em>{k,l}
+= \mathbf{U}<em>{i,j} + \sum_a \sum_b \mathbf{V}</em>{i,j,a,b} \cdot \mathbf{X}_{i+a,j+b}
+\tag{1}
+$$
+由此式我们经过一些变换得到CNN的表示：</p>
+<ul>
+<li>由平移不变性，我们MLP原来的公式中$\mathbf{V}$是与$i,j$相关的量，也就是说$\mathbf{V}$是和位置有关的，既然我们平移不变，那我们就可以假设所有位置的$\mathbf{V}$都是一个相同的值，对于偏置$u$也是同理，于是我们由1式得到下式：</li>
+</ul>
+<p>$$
+\mathbf{H}<em>{i,j} = u + \sum_a \sum_b \mathbf{V}</em>{a,b} \cdot \mathbf{X}_{i+a,j+b}\tag{2}
+$$</p>
+<ul>
+<li>接下来我们考虑第二个原则：局部性。也就是在一定范围之外的$\mathbf{V}$可以被设置为0，于是我们由2式得到下式：
+$$
+\mathbf{H}<em>{i,j} = u + \sum</em>{a=-\Delta}^{\Delta} \sum_{b=-\Delta}^{\Delta} \mathbf{V}<em>{a,b} \cdot \mathbf{X}</em>{i+a,j+b} \tag{3}
+$$
+至此，我们得到了卷积层的数学表述,$\mathbf{V}$被称为卷积核(convolution kernel)或滤波器(filter)，显然，我们的参数规模大幅减小，但代价是以上所有的学习权重都依赖于归纳偏置，偏置不行就寄寄了。</li>
+</ul>
+<h2 id="数学中的卷积">数学中的卷积
+</h2><p>两个函数之间的卷积被定义为：
+$$
+(f * g)(\mathbf{x}) = \int f(\mathbf{z}) g(\mathbf{x} - \mathbf{z}) , d\mathbf{z}
+\tag{4}
+$$</p>
+<p>$$
+(f * g)(i) = \sum_a f(a) g(i - a)
+\tag{5}
+$$
+对于二维张量，则为f的索引(a, b)和g的索引$(i − a, j − b)$上的对应加和：</p>
+<p>$$
+(f * g)(i, j) = \sum_a \sum_b f(a, b) g(i - a, j - b)
+\tag{6}
+$$</p>
+<h2 id="互相关运算">互相关运算
+</h2><p>![[CNN.png]]
+这很直观明了，且我们的输出与输入和核函数的关系是：
+$$
+(n_{h}-k_{h}+1)\times(n_{w}-k_{w}+1)\tag{7}
+$$
+实现该运算的方式：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">corr2d</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">K</span><span class="p">):</span> 
+</span></span><span class="line"><span class="cl">	<span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">K</span><span class="o">.</span><span class="n">shape</span>
+</span></span><span class="line"><span class="cl">	<span class="n">Y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">h</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">w</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+</span></span><span class="line"><span class="cl">			<span class="n">Y</span><span class="p">[</span><span class="n">i</span><span class="o">.</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span><span class="n">j</span> <span class="o">+</span> <span class="n">w</span><span class="p">]</span> <span class="o">*</span> <span class="n">K</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="n">Y</span>
+</span></span></code></pre></div><p>卷积层：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Conv2D</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kernel_size</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">		<span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">kernel_size</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">		<span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="n">corr2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span>
+</span></span></code></pre></div><h2 id="图像中目标的边缘检测">图像中目标的边缘检测：
+</h2><p>一开始我们手搓一个kernel：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tensor<span class="o">([[</span>1., 1., 0., 0., 0., 0., 1., 1.<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">		<span class="o">[</span>1., 1., 0., 0., 0., 0., 1., 1.<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">		<span class="o">[</span>1., 1., 0., 0., 0., 0., 1., 1.<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">		<span class="o">[</span>1., 1., 0., 0., 0., 0., 1., 1.<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">		<span class="o">[</span>1., 1., 0., 0., 0., 0., 1., 1.<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">		<span class="o">[</span>1., 1., 0., 0., 0., 0., 1., 1.<span class="o">]])</span>
+</span></span></code></pre></div><p>对于这个图像，我们手搓一个<code>tensor([1,-1])</code>当kernel，运行得到结果：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tensor<span class="o">([[</span> 0., 1., 0., 0., 0., -1., 0.<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">		<span class="o">[</span> 0., 1., 0., 0., 0., -1., 0.<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">		<span class="o">[</span> 0., 1., 0., 0., 0., -1., 0.<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">		<span class="o">[</span> 0., 1., 0., 0., 0., -1., 0.<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">		<span class="o">[</span> 0., 1., 0., 0., 0., -1., 0.<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">		<span class="o">[</span> 0., 1., 0., 0., 0., -1., 0.<span class="o">]])</span>
+</span></span></code></pre></div><p>他很好的完成了检测边缘的工作。
+如果我们只需寻找黑白边缘，那么以上[1, -1]的边缘检测器足以。然而，当有了更复杂数值的卷积核，或者连续的卷积层时，我们不可能手动设计滤波器。那么我们是否可以学习由X生成Y的卷积核呢？</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 构造一个二维卷积层，它具有1个输出通道和形状为（1，2）的卷积核</span>
+</span></span><span class="line"><span class="cl"><span class="n">conv2d</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 这个二维卷积层使用四维输入和输出格式（批量大小、通道、高度、宽度），</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 其中批量大小和通道数都为1</span>
+</span></span><span class="line"><span class="cl"><span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">lr</span> <span class="o">=</span> <span class="mf">3e-2</span> <span class="c1"># 学习率</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">	<span class="n">Y_hat</span> <span class="o">=</span> <span class="n">conv2d</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="n">l</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y_hat</span> <span class="o">-</span> <span class="n">Y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl">	<span class="n">conv2d</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="n">l</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="c1"># 迭代卷积核</span>
+</span></span><span class="line"><span class="cl">	<span class="n">conv2d</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span> <span class="o">-=</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">conv2d</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">grad</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;epoch </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">, loss </span><span class="si">{</span><span class="n">l</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span></code></pre></div><p>最后我们得到的卷积核：
+<code>tensor([[ 1.0010, -0.9739]])</code></p>
+<h2 id="特征映射和感受野">特征映射和感受野
+</h2><p>特征映射就是一个卷积层的输出，感受野是前向传播过程中可能影响计算的所有元素(来自所有先前层)。</p>
+<h2 id="填充和步幅">填充和步幅
+</h2><p>填充就是一个图片太小，我们需要扩大他的感受野方便卷积核学习；</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">conv2d</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">conv2d</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="c1">#高度，宽度</span>
+</span></span></code></pre></div><p>步幅就是一个图片太大，我们要让卷积核在一次移动中移动大于一个像素单位</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">conv2d</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">conv2d</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">stride</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</span></span></code></pre></div><h2 id="通道">通道
+</h2><p>我们到目前为止的讨论都是基于单色图片来进行的，但是事实上我们大多数图片都是由三种颜色构成，对于卷积来说就是三通道。
+所以，对于一个通道数为$c_{i}$的图片，此时我们的图片是一个$c_{i}\times w\times h$的张量，而对于这样的感受野，我们将采取一个$c_{i}\times w_{n}\times h_{n}$的卷积核，对于每一层的卷积结果相加得到输出：
+![[multi-channel-cnn.png]]
+多输出通道指的是卷积层会使用多个不同的卷积核，每个核与所有输入通道进行卷积操作，生成一个输出特征图。所有输出特征图共同构成输出张量的多个通道。每个输出通道可能学习到输入图像中的不同特征模式，如边缘、纹理、形状等。</p>
+<h2 id="1times-1卷积核">$1\times 1$卷积核
+</h2><p>我们主要使用$1\times 1$卷积核调整通道数量和参数复杂性：
+![[单位卷积核.png]]</p>
+<h2 id="汇聚层池化层">汇聚层(池化层)
+</h2><p>我们可以用pooling来缓解卷积层的位置敏感
+![[pooling.png]]我们有最大池化和平均池化，对于池化层，卷积层中的padding、stride和多通道都是相同的。</p>
+<p>最终，作为第六章的学习效果检测，我选择手动搭建LeNet[[My_LeNet]]</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 samallwhite
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/myblog/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

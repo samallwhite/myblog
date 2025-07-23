@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="这一章并没有介绍新的模型或数据集，主要介绍了一些torch的操作，起到一个承上启下。\n架构 首先，我们从一种比较抽象的层面来讨论pytroch中神经网络结构是如何组织构成的。 单个神经网络是一个很简单的结构，他有三个功能：接受输入，产生输出，携带一些参数，而对于一个MLP也是一样的。 为了实现这些复杂的网络，我们引入了神经网络块的概念。块（block）可以描述单个层、由多个层组成的组件或整个模型本身。使用块进行抽象的一个好处是可以将一些块组合成更大的组件，这一过程通常是递归的。 而我们一般通过class实现block，在定义我们自己的block时，由于自动微分已经定义了一些后端实现，我们只需要考虑前向传播和一些必要的参数。\n自定义block 我们首先来看看block的一些功能：\n将输入数据作为其前向传播函数的参数。 通过前向传播函数来生成输出。请注意，输出的形状可能与输入的形状不同。例如，我们上面模型中的第一个全连接的层接收一个20维的输入，但是返回一个维度为256的输出。 计算其输出关于输入的梯度，可通过其反向传播函数进行访问。通常这是自动发生的。 存储和访问前向传播计算所需的参数。 根据需要初始化模型参数。 class MLP(nn.Module): def __init__(self): super().__init__() self.hidden = nn.Linear(20, 256) self.out = nn.Linear(256, 20) def forward(self, X): return self.out(F.relu(self.hidden(X))) MySequential 在我们目前的情境下，自己写一个Sequential来连接神经网络的各个层是没什么必要的，但到后面接触到ResNet等结构，这也显得必要了(因为我们要自己写forward)。\nclass MySequential(nn.Module): def __init__(self, *args): super().__init__() for idx, module in enumerate(args): self._modules[str(idx)] = module def forward(self, x): for block in self._modules.values(): X = block(X) return X 所以，其实Sequential类就是一个列表存储这些个层。\n参数管理 参数访问 net[2].state_dict() &gt;&gt;&gt;OrderedDict([(&#39;weight&#39;, tensor([[-0.0427, -0.2939, -0.1894, 0.0220, -0.1709, -0.1522, -0.0334, -0.2263]])), (&#39;bias&#39;, tensor([0.0887]))]) 这样访问的就是MLP中第三层的参数 我们同样可以精细地访问：\nprint(type(net[2].bias)) print(net[2].bias) print(net[2].bias.data) &lt;class &#39;torch.nn.parameter.Parameter&#39;&gt; Parameter containing: tensor([0.0887], requires_grad=True) tensor([0.0887]) net[2].weight.grad == None &gt;&gt;&gt;True 一次性访问所有参数：\nprint(*[(name, param.shape) for name, param in net[0].named_parameters()]) print(*[(name, param.shape) for name, param in net.named_parameters()]) (&#39;weight&#39;, torch.Size([8, 4])) (&#39;bias&#39;, torch.Size([8])) (&#39;0.weight&#39;, torch.Size([8, 4])) (&#39;0.bias&#39;, torch.Size([8])) (&#39;2.weight&#39;, torch.Size([1, 8])) (&#39;2.bias&#39;,torch.Size([1])) 这也为我们提供了另一种访问参数的方式：\nnet.state_dict()[&#39;2.bias&#39;].data &gt;&gt;&gt;tensor([0.0887]) 参数初始化 首先，我们有丰富的内置初始化器：\n">
+<title>动手学深度学习Pytorch(5章)</title>
+
+<link rel='canonical' href='https://samallwhite.github.io/myblog/post/chapter-5/'>
+
+<link rel="stylesheet" href="/myblog/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css"><meta property='og:title' content="动手学深度学习Pytorch(5章)">
+<meta property='og:description' content="这一章并没有介绍新的模型或数据集，主要介绍了一些torch的操作，起到一个承上启下。\n架构 首先，我们从一种比较抽象的层面来讨论pytroch中神经网络结构是如何组织构成的。 单个神经网络是一个很简单的结构，他有三个功能：接受输入，产生输出，携带一些参数，而对于一个MLP也是一样的。 为了实现这些复杂的网络，我们引入了神经网络块的概念。块（block）可以描述单个层、由多个层组成的组件或整个模型本身。使用块进行抽象的一个好处是可以将一些块组合成更大的组件，这一过程通常是递归的。 而我们一般通过class实现block，在定义我们自己的block时，由于自动微分已经定义了一些后端实现，我们只需要考虑前向传播和一些必要的参数。\n自定义block 我们首先来看看block的一些功能：\n将输入数据作为其前向传播函数的参数。 通过前向传播函数来生成输出。请注意，输出的形状可能与输入的形状不同。例如，我们上面模型中的第一个全连接的层接收一个20维的输入，但是返回一个维度为256的输出。 计算其输出关于输入的梯度，可通过其反向传播函数进行访问。通常这是自动发生的。 存储和访问前向传播计算所需的参数。 根据需要初始化模型参数。 class MLP(nn.Module): def __init__(self): super().__init__() self.hidden = nn.Linear(20, 256) self.out = nn.Linear(256, 20) def forward(self, X): return self.out(F.relu(self.hidden(X))) MySequential 在我们目前的情境下，自己写一个Sequential来连接神经网络的各个层是没什么必要的，但到后面接触到ResNet等结构，这也显得必要了(因为我们要自己写forward)。\nclass MySequential(nn.Module): def __init__(self, *args): super().__init__() for idx, module in enumerate(args): self._modules[str(idx)] = module def forward(self, x): for block in self._modules.values(): X = block(X) return X 所以，其实Sequential类就是一个列表存储这些个层。\n参数管理 参数访问 net[2].state_dict() &gt;&gt;&gt;OrderedDict([(&#39;weight&#39;, tensor([[-0.0427, -0.2939, -0.1894, 0.0220, -0.1709, -0.1522, -0.0334, -0.2263]])), (&#39;bias&#39;, tensor([0.0887]))]) 这样访问的就是MLP中第三层的参数 我们同样可以精细地访问：\nprint(type(net[2].bias)) print(net[2].bias) print(net[2].bias.data) &lt;class &#39;torch.nn.parameter.Parameter&#39;&gt; Parameter containing: tensor([0.0887], requires_grad=True) tensor([0.0887]) net[2].weight.grad == None &gt;&gt;&gt;True 一次性访问所有参数：\nprint(*[(name, param.shape) for name, param in net[0].named_parameters()]) print(*[(name, param.shape) for name, param in net.named_parameters()]) (&#39;weight&#39;, torch.Size([8, 4])) (&#39;bias&#39;, torch.Size([8])) (&#39;0.weight&#39;, torch.Size([8, 4])) (&#39;0.bias&#39;, torch.Size([8])) (&#39;2.weight&#39;, torch.Size([1, 8])) (&#39;2.bias&#39;,torch.Size([1])) 这也为我们提供了另一种访问参数的方式：\nnet.state_dict()[&#39;2.bias&#39;].data &gt;&gt;&gt;tensor([0.0887]) 参数初始化 首先，我们有丰富的内置初始化器：\n">
+<meta property='og:url' content='https://samallwhite.github.io/myblog/post/chapter-5/'>
+<meta property='og:site_name' content='samallwhite'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-07-19T20:00:00&#43;08:00'/><meta property='article:modified_time' content='2025-07-19T20:00:00&#43;08:00'/>
+<meta name="twitter:title" content="动手学深度学习Pytorch(5章)">
+<meta name="twitter:description" content="这一章并没有介绍新的模型或数据集，主要介绍了一些torch的操作，起到一个承上启下。\n架构 首先，我们从一种比较抽象的层面来讨论pytroch中神经网络结构是如何组织构成的。 单个神经网络是一个很简单的结构，他有三个功能：接受输入，产生输出，携带一些参数，而对于一个MLP也是一样的。 为了实现这些复杂的网络，我们引入了神经网络块的概念。块（block）可以描述单个层、由多个层组成的组件或整个模型本身。使用块进行抽象的一个好处是可以将一些块组合成更大的组件，这一过程通常是递归的。 而我们一般通过class实现block，在定义我们自己的block时，由于自动微分已经定义了一些后端实现，我们只需要考虑前向传播和一些必要的参数。\n自定义block 我们首先来看看block的一些功能：\n将输入数据作为其前向传播函数的参数。 通过前向传播函数来生成输出。请注意，输出的形状可能与输入的形状不同。例如，我们上面模型中的第一个全连接的层接收一个20维的输入，但是返回一个维度为256的输出。 计算其输出关于输入的梯度，可通过其反向传播函数进行访问。通常这是自动发生的。 存储和访问前向传播计算所需的参数。 根据需要初始化模型参数。 class MLP(nn.Module): def __init__(self): super().__init__() self.hidden = nn.Linear(20, 256) self.out = nn.Linear(256, 20) def forward(self, X): return self.out(F.relu(self.hidden(X))) MySequential 在我们目前的情境下，自己写一个Sequential来连接神经网络的各个层是没什么必要的，但到后面接触到ResNet等结构，这也显得必要了(因为我们要自己写forward)。\nclass MySequential(nn.Module): def __init__(self, *args): super().__init__() for idx, module in enumerate(args): self._modules[str(idx)] = module def forward(self, x): for block in self._modules.values(): X = block(X) return X 所以，其实Sequential类就是一个列表存储这些个层。\n参数管理 参数访问 net[2].state_dict() &gt;&gt;&gt;OrderedDict([(&#39;weight&#39;, tensor([[-0.0427, -0.2939, -0.1894, 0.0220, -0.1709, -0.1522, -0.0334, -0.2263]])), (&#39;bias&#39;, tensor([0.0887]))]) 这样访问的就是MLP中第三层的参数 我们同样可以精细地访问：\nprint(type(net[2].bias)) print(net[2].bias) print(net[2].bias.data) &lt;class &#39;torch.nn.parameter.Parameter&#39;&gt; Parameter containing: tensor([0.0887], requires_grad=True) tensor([0.0887]) net[2].weight.grad == None &gt;&gt;&gt;True 一次性访问所有参数：\nprint(*[(name, param.shape) for name, param in net[0].named_parameters()]) print(*[(name, param.shape) for name, param in net.named_parameters()]) (&#39;weight&#39;, torch.Size([8, 4])) (&#39;bias&#39;, torch.Size([8])) (&#39;0.weight&#39;, torch.Size([8, 4])) (&#39;0.bias&#39;, torch.Size([8])) (&#39;2.weight&#39;, torch.Size([1, 8])) (&#39;2.bias&#39;,torch.Size([1])) 这也为我们提供了另一种访问参数的方式：\nnet.state_dict()[&#39;2.bias&#39;].data &gt;&gt;&gt;tensor([0.0887]) 参数初始化 首先，我们有丰富的内置初始化器：\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/myblog/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/myblog/img/avatar_hu_f509edb42ecc0ebd.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/myblog">samallwhite</a></h1>
+            <h2 class="site-description"></h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/myblog/post/chapter-5/">动手学深度学习Pytorch(5章)</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jul 19, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    1 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>这一章并没有介绍新的模型或数据集，主要介绍了一些torch的操作，起到一个承上启下。</p>
+<h2 id="架构">架构
+</h2><p>首先，我们从一种比较抽象的层面来讨论pytroch中神经网络结构是如何组织构成的。
+单个神经网络是一个很简单的结构，他有三个功能：接受输入，产生输出，携带一些参数，而对于一个MLP也是一样的。
+为了实现这些复杂的网络，我们引入了神经网络块的概念。块（block）可以描述单个层、由多个层组成的组件或整个模型本身。使用块进行抽象的一个好处是可以将一些块组合成更大的组件，这一过程通常是递归的。
+而我们一般通过class实现block，在定义我们自己的block时，由于自动微分已经定义了一些后端实现，我们只需要考虑前向传播和一些必要的参数。</p>
+<h3 id="自定义block">自定义block
+</h3><p>我们首先来看看block的一些功能：</p>
+<ol>
+<li>将输入数据作为其前向传播函数的参数。</li>
+<li>通过前向传播函数来生成输出。请注意，输出的形状可能与输入的形状不同。例如，我们上面模型中的第一个全连接的层接收一个20维的输入，但是返回一个维度为256的输出。</li>
+<li>计算其输出关于输入的梯度，可通过其反向传播函数进行访问。通常这是自动发生的。</li>
+<li>存储和访问前向传播计算所需的参数。</li>
+<li>根据需要初始化模型参数。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">MLP</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">			<span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">			<span class="bp">self</span><span class="o">.</span><span class="n">hidden</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="bp">self</span><span class="o">.</span><span class="n">out</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden</span><span class="p">(</span><span class="n">X</span><span class="p">)))</span>
+</span></span></code></pre></div><h3 id="mysequential">MySequential
+</h3><p>在我们目前的情境下，自己写一个Sequential来连接神经网络的各个层是没什么必要的，但到后面接触到ResNet等结构，这也显得必要了(因为我们要自己写forward)。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">MySequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">		<span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">module</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">			<span class="bp">self</span><span class="o">.</span><span class="n">_modules</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">)]</span> <span class="o">=</span> <span class="n">module</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_modules</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">			<span class="n">X</span> <span class="o">=</span> <span class="n">block</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="n">X</span>
+</span></span></code></pre></div><p>所以，其实Sequential类就是一个列表存储这些个层。</p>
+<h2 id="参数管理">参数管理
+</h2><h3 id="参数访问">参数访问
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">net</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span><span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="n">tensor</span><span class="p">([[</span><span class="o">-</span><span class="mf">0.0427</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2939</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1894</span><span class="p">,</span> <span class="mf">0.0220</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1709</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1522</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0334</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2263</span><span class="p">]])),</span> <span class="p">(</span><span class="s1">&#39;bias&#39;</span><span class="p">,</span> <span class="n">tensor</span><span class="p">([</span><span class="mf">0.0887</span><span class="p">]))])</span>
+</span></span></code></pre></div><p>这样访问的就是MLP中第三层的参数
+我们同样可以精细地访问：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">net</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">bias</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">net</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">bias</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">net</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">&lt;class <span class="s1">&#39;torch.nn.parameter.Parameter&#39;</span>&gt;
+</span></span><span class="line"><span class="cl">Parameter containing:
+</span></span><span class="line"><span class="cl">tensor<span class="o">([</span>0.0887<span class="o">]</span>, <span class="nv">requires_grad</span><span class="o">=</span>True<span class="o">)</span>
+</span></span><span class="line"><span class="cl">tensor<span class="o">([</span>0.0887<span class="o">])</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">net</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">grad</span> <span class="o">==</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span><span class="kc">True</span>
+</span></span></code></pre></div><p>一次性访问所有参数：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="o">*</span><span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">net</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">()])</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="o">*</span><span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">()])</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="o">(</span><span class="s1">&#39;weight&#39;</span>, torch.Size<span class="o">([</span>8, 4<span class="o">]))</span> <span class="o">(</span><span class="s1">&#39;bias&#39;</span>, torch.Size<span class="o">([</span>8<span class="o">]))</span>
+</span></span><span class="line"><span class="cl"><span class="o">(</span><span class="s1">&#39;0.weight&#39;</span>, torch.Size<span class="o">([</span>8, 4<span class="o">]))</span> <span class="o">(</span><span class="s1">&#39;0.bias&#39;</span>, torch.Size<span class="o">([</span>8<span class="o">]))</span> <span class="o">(</span><span class="s1">&#39;2.weight&#39;</span>, torch.Size<span class="o">([</span>1, 8<span class="o">]))</span> <span class="o">(</span><span class="s1">&#39;2.bias&#39;</span>,torch.Size<span class="o">([</span>1<span class="o">]))</span>
+</span></span></code></pre></div><p>这也为我们提供了另一种访问参数的方式：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">net</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()[</span><span class="s1">&#39;2.bias&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.0887</span><span class="p">])</span>
+</span></span></code></pre></div><h3 id="参数初始化">参数初始化
+</h3><p>首先，我们有丰富的内置初始化器：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">init_normal</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">==</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">normal_</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">bias</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">net</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">init_normal</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">net</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">net</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="o">(</span>tensor<span class="o">([</span>-0.0214, -0.0015, -0.0100, -0.0058<span class="o">])</span>, tensor<span class="o">(</span>0.<span class="o">))</span>
+</span></span></code></pre></div><p>当然了，通过一点小小的修改就可以把参数初始化为1</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl">	<span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">constant_</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span></code></pre></div><p>我们还可以使用大名鼎鼎的Xavier初始化：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">init_xavier</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">==</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">init_42</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">==</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span>
+</span></span><span class="line"><span class="cl">		<span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">constant_</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">net</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">init_xavier</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">net</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">init_42</span><span class="p">)</span>
+</span></span></code></pre></div><p>我们还有延后初始化，这个放在CNN部分阐明</p>
+<h2 id="自定义层">自定义层
+</h2><p>我们直接讨论如何定义带参数的层：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">MyLinear</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_units</span><span class="p">,</span> <span class="n">units</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">		<span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">in_units</span><span class="p">,</span> <span class="n">units</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">		<span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">units</span><span class="p">,))</span>
+</span></span><span class="line"><span class="cl">	<span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">		<span class="n">linear</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">linear</span><span class="p">)</span>
+</span></span></code></pre></div><h2 id="读写文件">读写文件
+</h2><p>比较重要的就是存参数和读取参数：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1">#对于一个net网络</span>
+</span></span><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s1">&#39;mlp.params&#39;</span><span class="p">)</span><span class="c1">#save</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#如何恢复模型</span>
+</span></span><span class="line"><span class="cl"><span class="n">clone</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">clone</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;mlp.params&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">clone</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+</span></span></code></pre></div><h2 id="gpu">GPU
+</h2><p>这部分就纯纯gpu技术文档，现用现查完了</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 samallwhite
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/myblog/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
