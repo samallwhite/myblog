@@ -33,8 +33,8 @@ params:
     subtitle:
     avatar:
       enabled: true
-      local: true
-      src: img/avatar.png
+      local: false
+      src: /myblog/img/avatar.png
 
   article:
     headingAnchor: false
