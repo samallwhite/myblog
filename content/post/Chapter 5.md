@@ -1,13 +1,10 @@
 ---
-title: "动手学深度学习（第5章）"
+title: "D2L Chapter 5"
 date: 2025-07-19T20:00:00+08:00
 math: true
 draft: false
 categories:
-  - "动手学深度学习"
-tags:
-  - "PyTorch"
-  - "D2L"
+  - "d2l"
 ---
 
 杩欎竴绔犲苟娌℃湁浠嬬粛鏂扮殑妯″瀷鎴栨暟鎹泦锛屼富瑕佷粙缁嶄簡涓€浜泃orch鐨勬搷浣滐紝璧峰埌涓€涓壙涓婂惎涓嬨€?
