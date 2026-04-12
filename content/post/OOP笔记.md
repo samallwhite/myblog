@@ -623,7 +623,7 @@ public:
 };
 ```
 
-![image-20260410203133108](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260410203133108.png)
+![image-20260410203133108](img/oop_assets/image-20260410203133108.png)
 
 ## Constructor & Destructor
 
@@ -702,19 +702,19 @@ int main(){
 }
 ```
 
-![image-20260410204118271](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260410204118271.png)
+![image-20260410204118271](img/oop_assets/image-20260410204118271.png)
 
 # 7.Function Overloading & Default Arguments
 
 当有些函数在不同的类上执行相同的任务时，我们倾向于给这些函数相同的名字
 
-![image-20260410204437378](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260410204437378.png)
+![image-20260410204437378](img/oop_assets/image-20260410204437378.png)
 
 这个过程就是overloading
 
 编译器会按照参数的类型&数量选择最合适的函数，这个过程并不会考虑到参数的名称&返回类型
 
-![image-20260410204850488](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260410204850488.png)
+![image-20260410204850488](img/oop_assets/image-20260410204850488.png)
 
 并且编译器还会考虑到built-in type cast，看看转换后的数据是否满足函数要求
 
@@ -744,9 +744,9 @@ void fun(int a, int b, int c){
 
 - **默认参数是静态绑定的：** 编译器在编译某个 `.cpp` 文件时，只看该文件中可见的函数声明来决定默认参数填什么。
 
-![image-20260410212346862](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260410212346862.png)
+![image-20260410212346862](img/oop_assets/image-20260410212346862.png)
 
-![image-20260410212443380](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260410212443380.png)
+![image-20260410212443380](img/oop_assets/image-20260410212443380.png)
 
 # 8.Constants
 
@@ -821,7 +821,7 @@ pv1 = &v2;//error
 
 当你在类内定义了一个静态变量成员，那么这个类的所有实体都共用这一个变量，不会创造新的
 
-![image-20260410224655150](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260410224655150.png)
+![image-20260410224655150](img/oop_assets/image-20260410224655150.png)
 
 类静态变量的正确定义方式：
 
@@ -960,7 +960,7 @@ inline 函数必须在“每个使用它的翻译单元（.cpp）中都能看到
 
 static内置型变量被初始化成0，但是static user defined types会被constructor定义
 
-![image-20260411110220662](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260411110220662.png)
+![image-20260411110220662](img/oop_assets/image-20260411110220662.png)
 
 # Controling linkage
 
@@ -1127,7 +1127,7 @@ The Copy Constructor is called when
 
 The Copy Constructor **is not called whenpassing arguments by references**. Because no new object is created.
 
-![image-20260411170745301](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260411170745301.png)、
+![image-20260411170745301](img/oop_assets/image-20260411170745301.png)、
 
 ## Pointers to members
 
@@ -1213,7 +1213,7 @@ const Integer Integer::operator+(const Integer& rv)const{
 
 使用引用类型可以避免过程中产生的拷贝
 
-![image-20260411173058700](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260411173058700.png)
+![image-20260411173058700](img/oop_assets/image-20260411173058700.png)
 
 ```cpp
 class complex
@@ -1242,7 +1242,7 @@ compelx& complex::operator+=(const complex& c){
 }
 ```
 
-![image-20260411173332518](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260411173332518.png)
+![image-20260411173332518](img/oop_assets/image-20260411173332518.png)
 
 ## Friend Functions
 
@@ -1298,7 +1298,7 @@ ostream& operator<<(ostream& os, const complex& c) {
 }
 ```
 
-![image-20260411180106580](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260411180106580.png)
+![image-20260411180106580](img/oop_assets/image-20260411180106580.png)
 
 If the first operand is an object of an class, the operator should be declared as a member function. Otherwise, it should be declared as a friend function.
 
@@ -1306,7 +1306,7 @@ If the first operand is an object of an class, the operator should be declared a
 
 以下的操作符只能被重载为成员函数
 
-![image-20260411191554287](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260411191554287.png)
+![image-20260411191554287](img/oop_assets/image-20260411191554287.png)
 
 ## Increment & Decrement
 
@@ -1660,7 +1660,7 @@ public:
 
 ### Choosing composition vs inheritance
 
-![image-20260412133031660](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412133031660.png)
+![image-20260412133031660](img/oop_assets/image-20260412133031660.png)
 
 ## Access Control
 
@@ -1745,7 +1745,7 @@ void Rectangle::InitR(int x,int y,int w,int h){
 
 
 
-![image-20260412162313597](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412162313597.png)
+![image-20260412162313597](img/oop_assets/image-20260412162313597.png)
 
 针对以上继承私有的修改方法，我们在rectangle的public部分手动包装（转发）父类的函数：
 
@@ -1852,7 +1852,7 @@ void A::Print(){
 
 两个父类的构造顺序是按照继承时的顺序来的
 
-![image-20260412170852112](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412170852112.png)
+![image-20260412170852112](img/oop_assets/image-20260412170852112.png)
 
 ## Incremental development
 
@@ -1893,7 +1893,7 @@ void C::f(){
 
 也有可能存在下面这种情况：
 
-![image-20260412163947448](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412163947448.png)
+![image-20260412163947448](img/oop_assets/image-20260412163947448.png)
 
 我们有三种方法，两种跟刚才的双重继承一致，第三种是virtual base class
 
@@ -1905,7 +1905,7 @@ class D:virtual public A,public B,virtual public C{
 
 这样继承就会被优化
 
-![image-20260412164114150](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412164114150.png)
+![image-20260412164114150](img/oop_assets/image-20260412164114150.png)
 
 对于虚基类的继承：
 
@@ -1919,7 +1919,7 @@ Listed in all derived classes' initializers.（所有派生类都必须列出它
 
 If omitted, use default constructor.（省略则隐式调用默认构造）
 
-![image-20260412165101504](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412165101504.png)
+![image-20260412165101504](img/oop_assets/image-20260412165101504.png)
 
 ```cpp
 #include <iostream>
@@ -2119,13 +2119,13 @@ void Instrument :: play( ) const
 
 3.When using scope resolution operator ::, virtual mechanism will not be used.
 
-![image-20260412173459218](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412173459218.png)
+![image-20260412173459218](img/oop_assets/image-20260412173459218.png)
 
 虚函数与他的同名函数必须是同一类的
 
 **只有通过基类指针/引用才会触发运行时多态**
 
-![image-20260412173853411](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412173853411.png)
+![image-20260412173853411](img/oop_assets/image-20260412173853411.png)
 
 ```cpp
 //: C15:Early.cpp
@@ -2157,7 +2157,7 @@ void main( )
 
 ```
 
-![image-20260412174115556](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412174115556.png)
+![image-20260412174115556](img/oop_assets/image-20260412174115556.png)
 
 ## Abstract base classed and pure virtual functions
 
@@ -2244,7 +2244,7 @@ int main() {
 
 ```
 
-![image-20260412203515316](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412203515316.png)
+![image-20260412203515316](img/oop_assets/image-20260412203515316.png)
 
 ```cpp
 Dog(const string& petName) : Pet(petName) {}
@@ -2353,14 +2353,14 @@ int main() {
 
 构造函数不能是虚函数，因为构造函数负责构造vptr
 
-![image-20260412205641669](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412205641669.png)
+![image-20260412205641669](img/oop_assets/image-20260412205641669.png)
 
 ## Destructors and virtual destructors
 
 - The destructor can and often must be virtual.
 - If the destructor in the base is declared virtual, destructors in derived classes are all virtual even without the keyword virtual.
 - To ensure destructors can be called exactly.
-![image-20260412211027289](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412211027289.png)
+![image-20260412211027289](img/oop_assets/image-20260412211027289.png)
 
 如果基类析构函数是 virtual，那么所有派生类析构函数自动也是 virtual（即使不写 virtual）
 
