@@ -2,6 +2,7 @@
 
 title: "动手学深度学习Pytorch(2-4章)"
 date: 2025-07-19T20:00:00+08:00
+math: true
 draft: false
 
 ---
@@ -88,6 +89,7 @@ y = torch.tensor(outputs.to_numpy(dtype=float))
 
 ### 一些线代知识：
 首先，我们介绍Hadamard积(⊙)：
+
 $$
 \mathbf{A} ⊙\mathbf{B} =
 \begin{bmatrix}
@@ -97,6 +99,7 @@ a_{21}b_{21} & a_{22}b_{22} & \cdots & a_{2n}b_{2n} \\
 a_{m1}b_{m1} & a_{m2}b_{m2} & \cdots & a_{mn}b_{mn}
 \end{bmatrix}
 $$
+
 该Hadamard积可以表示为：
 ```python
 A * B
@@ -134,8 +137,11 @@ A.cumsum(axis=0)
 ```python
 torch.dot(x,y)
 ```
+
 矩阵-向量积：
 矩阵可以表示为行向量作为元素的列向量：
+
+
 $$
 \mathbf{A} =
 \begin{bmatrix}
@@ -146,7 +152,11 @@ $$
 \end{bmatrix}
 \tag{2.3.5}
 $$
+
+
 在我们有一个同维度向量X的情况下:
+
+
 $$
 \mathbf{A} \mathbf{x} =
 \begin{bmatrix}
@@ -156,6 +166,11 @@ $$
 \mathbf{a}_m^{\top}
 \end{bmatrix}
 \mathbf{x}
+$$
+
+
+
+$$
 =
 \begin{bmatrix}
 \mathbf{a}_1^{\top} \mathbf{x} \\
@@ -165,6 +180,8 @@ $$
 \end{bmatrix}
 \tag{2.3.6}
 $$
+
+
 这就是矩阵-向量积：
 ```python
 troch.mv(A, x)
@@ -177,34 +194,42 @@ torch.mm(X, Y)
 **范数(norm)**：
 这个比较屌，也比较重要
 我们首先说一下$L_{2}$范数，其实这个范数就是此前学到的向量的模：
+
 $$
 \|\mathbf{x}\|_2 = \sqrt{ \sum_{i=1}^n x_i^2 }
 \tag{2.3.14}
 $$
+
 对于$L_{2}$范数，通常省略$L$：
 ```python
 torch.norm(x)
 ```
 与此同时，我们还有$L_{1}$范数：
+
 $$
 \|\mathbf{x}\|_1 = \sum_{i=1}^n |x_i|
 \tag{2.3.15}
 $$
+
 与$L_{2}$范数相比，$L_{1}$范数受异常值的影响较小：
 ```python
 #我们没有可以直接计算L1范数的方法
 torch.abs(u).sum()
 ```
 而以上所提及的$L_{1}$范数与$L_{2}$范数都是$L_{p}$范数的特例：
+
 $$
 \|\mathbf{x}\|_p = \left( \sum_{i=1}^{n} |x_i|^p \right)^{1/p}
 \tag{2.3.16}
 $$
+
 同时，我们还给出Frobenius范数，这个范数是矩阵的元素平方和的平方根，就好像是矩阵的$L_{2}$范数：
+
 $$
 \|\mathbf{X}\|_F = \sqrt{ \sum_{i=1}^{m} \sum_{j=1}^{n} x_{ij}^2 }
 \tag{2.3.17}
 $$
+
 想要求解Frobenius范数也很简单：
 ```python
 torch.norm(Mat)
@@ -246,11 +271,14 @@ x.grad
 关于为什么我们要对y.sum进行自动微分：
 对于：
 
+
 $$
 \mathbf{y} = f(\mathbf{x}) \in \mathbb{R}^n
 $$
 
+
 那么：
+
 
 $$
 \nabla_{\mathbf{x}} \mathbf{y} =
@@ -261,6 +289,7 @@ $$
 \end{bmatrix}
 \in \mathbb{R}^{n \times n}
 $$
+
 这是一个 **Jacobian（雅可比矩阵）**，而不是一个简单的向量。
 所以如果我们不指定维度的话，pytorch就不知道以什么方向微分。
 
@@ -271,55 +300,71 @@ $$
 （target）。预测所依据的自变量（面积和房龄）称为特征（feature）或协变量（covariate）。
 
 在机器学习领域，我们通常使用的是高维数据集，建模时采用线性代数表示法会比较方便。当我们的输入包含 \( d \) 个特征时，我们将预测结果（通常使用“尖角”符号表示 \( y \) 的估计值）表示为：
+
 $$
 \hat{y} = w_1 x_1 + \cdots + w_d x_d + b
 \tag{3.1.2}
 $$
 
 
+
 将所有特征放到向量 \( $\mathbf{x} \in \mathbb{R}^d$\) 中，并将所有权重放到向量 ( $\mathbf{w} \in \mathbb{R}^d$) 中，我们可以用点积形式来简洁地表达模型：
+
 $$
 \hat{y} = \mathbf{w}^\top \mathbf{x} + b
 \tag{3.1.3}
 $$
 
+
 在 (3.1.3) 中，向量 $\mathbf{x}$对应于单个数据样本的特征。用符号表示的矩阵 $\mathbf{X} \in \mathbb{R}^{n \times d}$ 可以很方便地引用我们整个数据集的 (n)个样本。其中， $\mathbf{x}$的每一行是一个样本，每一列是一种特征。
 对于特征集合 $\mathbf{x}$，预测值 $\hat{\mathbf{y}} \in \mathbb{R}^n$可以通过矩阵-向量乘法表示为：
+
 $$
 \hat{\mathbf{y}} = \mathbf{X} \mathbf{w} + b
 \tag{3.1.4}
 $$
+
 那么到目前为止，我们已经有了预期的模型形式，我们现在还需要两件事：模型质量的度量方式和更新模型以提高质量的方法。
 对于度量方式，我们提出损失函数(loss function):
+
 $$
 l^{(i)}(\mathbf{w}, b) = \frac{1}{2} \left( \hat{y}^{(i)} - y^{(i)} \right)^2
 $$
 
+
 为了衡量在整个数据集上的损失，我们对loss取均值，获得均方误差(MSE):
+
 
 $$
 L(\mathbf{w}, b) = \frac{1}{n} \sum_{i=1}^{n} \frac{1}{2} \left( \mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)} \right)^2
 $$
 
+
 所以我们的目的其实是：
+
 
 $$
 \mathbf{w}^*, b^* = \mathop{\arg\min}_{\mathbf{w}, b} L(\mathbf{w}, b)
 $$
+
 对于更新模型，我们采用梯度下降：
 梯度下降最简单的用法是计算损失函数（数据集中所有样本的损失均值）关于模型参数的导数（在这里也可以称为梯度）。但实际中的执行可能会非常慢：因为在每一次更新参数之前，我们必须遍历整个数据集。因此，我们通常会在每次需要计算更新的时候随机抽取一小批样本，这种变体叫做
 **小批量随机梯度下降（minibatchstochastic gradient descent）。**
 **权重向量更新公式：**
 
+
 $$
 \mathbf{w} \leftarrow \mathbf{w} - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \mathbf{x}^{(i)} \left( \mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)} \right)
 $$
 
+
 **偏置更新公式：**
+
 
 $$
 b \leftarrow b - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \left( \mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)} \right)
 $$
+
 在上式中，$\eta$是学习率，$\mathcal{B}$是每一个小批量的数据个数，也叫batch size，这两个是超参数，是**手动调整**的。
 我们可以通过高斯噪声正态分布和极大似然估计来证明MSE的合理性，但本笔记不多赘述。我在证明过程中发现了一个ϵ，这有点意思：它 在推理或采样中才显式出现
 如果你是搞**贝叶斯建模**或**生成模型**，比如：
@@ -376,15 +421,19 @@ for epoch in range(num_epochs):
 
 ### Softmax回归：
 softmax回归解决的是分类问题，它也是一种单层神经网络，输出层同样是全连接层。
+
 $$
 \hat{\mathbf{y}} = \text{softmax}(\mathbf{o}), \quad \text{其中} \quad \hat{y}_j = \frac{\exp(o_j)}{\sum_k \exp(o_k)}
 $$
+
 softmax运算获取一个向量并将其映射为概率。
 在此部分我们仍然有小批量处理，他大大提高了mv运算。
 #### 交叉熵损失函数
+
 $$
 l = - \sum_{j=1}^{q} y_j \log(\hat{y}_j)
 $$
+
 #### 图片数据集的读取
 我们可以通过torch内置的方法读取：
 ```python
@@ -528,14 +577,18 @@ trainer = torch.optim.SGD(net.parameters(), lr=lr)
 #### 正则化
 权重衰减是最广泛应用的正则化方法，通常也被称为$L_{2}$正则化。
 为了惩罚权重向量的大小，我们必须以某种方式在损失函数中添加∥w∥2，但是模型应该如何平衡这个新的额外惩罚的损失？实际上，我们通过正则化常数λ来描述这种权衡，这是一个非负超参数，我们使用验证数据拟合：
+
 $$
 L(\mathbf{w}, b) + \frac{\lambda}{2} \|\mathbf{w}\|^2
 $$
+
 我们采用$L_{2}$范数主要是因为$L_{2}$正则分布构成经典的岭回归，这使得我们的学习算法偏向于在大量特征上均匀分布权重的模型。
 所以我们有了新的SGD：
+
 $$
 \mathbf{w} \leftarrow (1 - \eta \lambda) \mathbf{w} - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \mathbf{x}^{(i)} \left( \mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)} \right)
 $$
+
 此$\lambda$也是超参数。
 #### 暂退法
 暂退法在前向传播过程中，计算每一内部层的同时丢弃一些神经元。用来避免过拟合
