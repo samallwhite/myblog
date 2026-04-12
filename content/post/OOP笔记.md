@@ -1,4 +1,4 @@
-﻿---
+---
 title: "OOP Notes"
 date: 2026-04-12T21:36:44+08:00
 draft: false
@@ -14,11 +14,11 @@ categories:
 
 ## Declaration vs Definition
 
-澹版槑鎸囧嚭鍚嶅瓧锛屽畾涔夊垎閰嶇┖闂?
+声明指出名字，定义分配空间
 
-澹版槑鍙互鎵ц澶氭锛屼絾瀹氫箟鍙兘鎵ц涓€娆★紱
+声明可以执行多次，但定义只能执行一次；
 
-浣跨敤`extern`琛ㄧず璇ヨ鍙ヤ粎浠呮槸澹版槑锛岃€屽畾涔夊湪闅忓悗/澶栭儴鏂囦欢锛?
+使用`extern`表示该语句仅仅是声明，而定义在随后/外部文件：
 
 ```cpp
 extern int x;
@@ -42,13 +42,13 @@ void main( ) {
 }
 ```
 
-鎴戜滑姝ゅ鐨刞int i;//E`鏄畾涔?澹版槑锛屾墍浠ユ垜浠鏋滈渶瑕佸湪鏌愬鎸囧畾鏄０鏄庯紝蹇呴』鐢╜extern`浠ラ槻姝㈠湪澶氭枃浠朵腑閲嶅瀹氫箟銆?
+我们此处的`int i;//E`是定义&声明，所以我们如果需要在某处指定是声明，必须用`extern`以防止在多文件中重复定义。
 
 ## Linking
 
-1. 棣栧厛鏄痯reprocessor锛宲reprocessor鎶奿nclude鐨勫ご鏂囦欢澶嶅埗杩涙潵锛屾妸瀹忓畾涔夋浛鎹紱
-2. 鍏舵鏄痗ompiler锛屽叾涓€鏄痯arsing锛氭妸浠ｇ爜鍙樻垚璇硶鏍戯紱鍏朵簩鏄痵ynthesizing锛氭妸璇硶涔﹀彉鎴愭眹缂?鏈哄櫒浠ｇ爜锛屽苟寰楀埌涓€涓猔.o/.obj`鏂囦欢锛?
-3. 绗笁姝ユ槸Linker锛屼粬鎶婃墍鏈塦.o`杩炴帴璧锋潵锛屽苟瀵绘壘鍚勫紩鐢ㄤ綅缃紱
+1. 首先是preprocessor，preprocessor把include的头文件复制进来，把宏定义替换；
+2. 其次是compiler，其一是parsing：把代码变成语法树；其二是synthesizing：把语法书变成汇编/机器代码，并得到一个`.o/.obj`文件；
+3. 第三步是Linker，他把所有`.o`连接起来，并寻找各引用位置；
 
 ## Basic Type
 
@@ -92,7 +92,7 @@ int main(){
 
 ### Vector
 
-Vector 鏄竴涓猼emplate
+Vector 是一个template
 
 ```cpp
 #include<string>
@@ -118,7 +118,7 @@ int main(){
 
 ## Introduction to pointers
 
-cpp鍏佽绌烘寚閽坄void*`鐨勫瓨鍦紝浣嗕笉鍏佽缁欐湁绫诲瀷鎸囬拡璧嬬┖鎸囬拡鍊硷細
+cpp允许空指针`void*`的存在，但不允许给有类型指针赋空指针值：
 
 ```cpp
 int i = 10;
@@ -142,28 +142,28 @@ int* ip = vp; // error
 
 ## Specifying storage allocation
 
-- Static storage area:鍦ㄧ▼搴忚繍琛屽墠灏辫鍒嗛厤
-- Stack:CPU鐩存帴鐢ㄦ潵瀛樺偍杩愯鏁版嵁(microprocessor)
-- Heap:鍔ㄦ€佸唴瀛樺垎閰?
+- Static storage area:在程序运行前就被分配
+- Stack:CPU直接用来存储运行数据(microprocessor)
+- Heap:动态内存分配
 
 ### Global
 
-global榛樿鏄彲external linkage鐨勶紝涔熷氨鏄榛樿`int globe;` == `extern int globe;`
+global默认是可external linkage的，也就是说默认`int globe;` == `extern int globe;`
 
-杩欏彲浠ヤ繚璇佸涓枃浠朵腑鐨刧lobe閮芥寚鍚戝悓涓€涓湴鍧€
+这可以保证多个文件中的globe都指向同一个地址
 
 ```cpp
 ```
 
 ### Local
 
-鍦╯tack
+在stack
 
 no linkage
 
 ### Static
 
-static鍙垵濮嬪寲涓€娆★紝鑰屼笖鐢熷瓨鍛ㄦ湡鏄暣涓▼搴?
+static只初始化一次，而且生存周期是整个程序
 
 ```cpp
 #include<iostream>
@@ -182,7 +182,7 @@ int main(){
 //if there's no static, the output should be 1,1,1,1,1
 ```
 
-static 鍙橀噺涓嶅澶栨毚闇诧紝鏃犳硶璺ㄦ枃浠惰闂?
+static 变量不对外暴露，无法跨文件访问
 
 ### Extern
 
@@ -190,7 +190,7 @@ static 鍙橀噺涓嶅澶栨毚闇诧紝鏃犳硶璺ㄦ枃浠惰闂?
 
 ### Constant&Volatile
 
-Volatile:寮哄埗缂栬瘧鍣ㄦ瘡娆′粠鍐呭瓨涓噸鏂拌鍙栧彉閲忥紙杩欏彲浠ラ闃插彉閲忚澶栭儴鍔涢噺淇敼锛?
+Volatile:强制编译器每次从内存中重新读取变量（这可以预防变量被外部力量修改）
 
 ## Bitwise operators
 
@@ -214,13 +214,13 @@ b=(a=2*3,a*5);
 //a=6,b=30
 ```
 
-**閫楀彿杩愮畻绗︿細渚濇鎵ц澶氫釜琛ㄨ揪寮忥紝浣嗘渶缁堢粨鏋滄槸鈥滄渶鍚庝竴涓〃杈惧紡鐨勫€尖€?*
+**逗号运算符会依次执行多个表达式，但最终结果是“最后一个表达式的值”**
 
-绗簩涓緥瀛愶紝鍥犱负閫楀彿鐨勪紭鍏堢骇寰堜綆锛屾墍浠ヤ簨瀹炴槸锛歚(a=b),c,d,e;`
+第二个例子，因为逗号的优先级很低，所以事实是：`(a=b),c,d,e;`
 
 ## Casting operator
 
-寮哄埗绫诲瀷杞崲锛?
+强制类型转换：
 
 ```cpp
 int a = 100;
@@ -231,11 +231,11 @@ int d = int(5.5);
 
 ## Function address
 
-鍐欐垚`void (*fp)();`
+写成`void (*fp)();`
 
-璧嬪€肩殑鏃跺€欏嚱鏁板悕浼氳嚜鍔ㄩ€€鍖栨垚鍑芥暟鎸囬拡锛?
+赋值的时候函数名会自动退化成函数指针；
 
-鍑芥暟鎸囬拡鐨勭被鍨嬩笌鍑芥暟杩斿洖绫诲瀷涓€鑷?
+函数指针的类型与函数返回类型一致
 
 ```cpp
 //: C03:PointerToFunction.cpp
@@ -256,7 +256,7 @@ int main() {
 
 ## Dynamic Memory Allocation
 
-浣跨敤`new`  `delete`鍒嗛厤鍜岄攢姣佺┖闂?
+使用`new`  `delete`分配和销毁空间
 
 
 
@@ -281,9 +281,9 @@ void Date::SetDate(int y,int m,int d){
 }
 ```
 
-class鐨勯粯璁ょ姸鎬佹槸private
+class的默认状态是private
 
-鑻ヨ璁块棶绫荤殑鏂规硶锛?
+若要访问类的方法：
 
 ```cpp
 class Stash{};
@@ -309,7 +309,7 @@ void Stash::initialize(int size){
 }
 ```
 
-闈為潤鎬佹垚鍛樺嚱鏁扮殑棣栦釜鍙傛暟閮芥槸闅愬惈鐨則his鎸囬拡锛屽湪杩欎釜渚嬪瓙閲屾槸`Stash*`绫诲瀷
+非静态成员函数的首个参数都是隐含的this指针，在这个例子里是`Stash*`类型
 
 ## Header file etiquette
 
@@ -373,15 +373,15 @@ int main(){
 
 ## Friend
 
-鏅€氱殑鎴愬憳鍑芥暟鍖呭惈涓夌偣锛氳闂畃rivate锛涘睘浜庣被浣滅敤鍩燂紱鏈塼his鎸囬拡
+普通的成员函数包含三点：访问private；属于类作用域；有this指针
 
-鑰屽弸鍏冨嚱鏁板彧鏈夌涓€鐐广€?
+而友元函数只有第一点。
 
-鈥?Asymmetric
+• Asymmetric
 
-鈥?non-transitive
+• non-transitive
 
-鈥?cannot be inherited
+• cannot be inherited
 
 ```cpp
 class A{
@@ -396,7 +396,7 @@ void show(A a){
 }
 ```
 
-### 鍙嬪厓浣滀负global function锛?
+### 友元作为global function：
 
 ```cpp
 #include<iostream>
@@ -420,7 +420,7 @@ int main(){
 }
 ```
 
-浠ヤ笂渚嬪瓙鏄痝lobal function as a friend锛涙垜浠篃鏈塯lobal function as friends锛屾剰鍛崇潃涓€涓嚱鏁板彲浠ユ槸澶氫釜绫荤殑鍙嬪厓銆?
+以上例子是global function as a friend；我们也有global function as friends，意味着一个函数可以是多个类的友元。
 
 ```cpp
 #include<iostream>
@@ -466,14 +466,14 @@ public:
     string name;
 };
 void Boy::Disp(Girl& x) {
-    cout << "Boy鈥檚 name is " << name << endl
-        << "Girl鈥檚 name is " << x.name << endl;
+    cout << "Boy’s name is " << name << endl
+        << "Girl’s name is " << x.name << endl;
 }
 ```
 
 ### a class as a friend
 
-鍦ㄤ笅闈㈢殑渚嬪瓙涓紝灏辨槸Y涓殑鎵€鏈夋柟娉曢兘鍙互璁块棶X鐨刾rivate鎴愬憳
+在下面的例子中，就是Y中的所有方法都可以访问X的private成员
 
 ```cpp
 #include<iostream>
@@ -510,14 +510,14 @@ void Y::Display(){
 }
 ```
 
-鍏充簬闈欐€佹垚鍛樼殑璁块棶锛?
+关于静态成员的访问：
 
 ```cpp
 class Test{
 public:
     static int count;
 };
-//璋冪敤锛?
+//调用：
 int Test::count = 0;
 ```
 
@@ -552,11 +552,11 @@ public:
 };
 ```
 
-- constructor鐨勭涓€涓殣鍚弬鏁版槸this鎸囬拡锛?
+- constructor的第一个隐含参数是this指针；
 
-- constructor鍙互鏈夊弬鏁帮紱
+- constructor可以有参数；
 
-- constructor鍙互琚玱verloaded锛?
+- constructor可以被overloaded；
 
 ```cpp
 #include<iostream>
@@ -576,7 +576,7 @@ Date::Date(int y,int m,int d){
 }
 ```
 
-鎴戜滑涔熷彲浠ユ湁澶氫釜constructor
+我们也可以有多个constructor
 
 ```cpp
 class Student{
@@ -594,7 +594,7 @@ int main(){
 }
 ```
 
-涓嬮潰鐨勬槸default constructor
+下面的是default constructor
 
 ```cpp
 A(){}
@@ -602,9 +602,9 @@ A(){}
 
 ## Cleanup with the destructor
 
-鈥?A destructor has not formal arguments andcannot be overloaded.
+• A destructor has not formal arguments andcannot be overloaded.
 
-鈥?A destructor has no return.
+• A destructor has no return.
 
 ```cpp
 class Date {
@@ -623,7 +623,7 @@ public:
 };
 ```
 
-![image-20260410203133108](img/oop_assets/image-20260410203133108.png)
+![image-20260410203133108](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260410203133108.png)
 
 ## Constructor & Destructor
 
@@ -664,7 +664,7 @@ int c[] = { 1, 2, 3, 4 };
 Size of an array=sizeof(c)/sizeof(c[0]);
 ```
 
-鍙互閫氳繃涓€涓嬫柟寮忓垵濮嬪寲object arrays
+可以通过一下方式初始化object arrays
 
 ```cpp
 Date y[2] = {Date(22001,2,3),Date(2003,4,5)};
@@ -702,21 +702,21 @@ int main(){
 }
 ```
 
-![image-20260410204118271](img/oop_assets/image-20260410204118271.png)
+![image-20260410204118271](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260410204118271.png)
 
 # 7.Function Overloading & Default Arguments
 
-褰撴湁浜涘嚱鏁板湪涓嶅悓鐨勭被涓婃墽琛岀浉鍚岀殑浠诲姟鏃讹紝鎴戜滑鍊惧悜浜庣粰杩欎簺鍑芥暟鐩稿悓鐨勫悕瀛?
+当有些函数在不同的类上执行相同的任务时，我们倾向于给这些函数相同的名字
 
-![image-20260410204437378](img/oop_assets/image-20260410204437378.png)
+![image-20260410204437378](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260410204437378.png)
 
-杩欎釜杩囩▼灏辨槸overloading
+这个过程就是overloading
 
-缂栬瘧鍣ㄤ細鎸夌収鍙傛暟鐨勭被鍨?鏁伴噺閫夋嫨鏈€鍚堥€傜殑鍑芥暟锛岃繖涓繃绋嬪苟涓嶄細鑰冭檻鍒板弬鏁扮殑鍚嶇О&杩斿洖绫诲瀷
+编译器会按照参数的类型&数量选择最合适的函数，这个过程并不会考虑到参数的名称&返回类型
 
-![image-20260410204850488](img/oop_assets/image-20260410204850488.png)
+![image-20260410204850488](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260410204850488.png)
 
-骞朵笖缂栬瘧鍣ㄨ繕浼氳€冭檻鍒癰uilt-in type cast锛岀湅鐪嬭浆鎹㈠悗鐨勬暟鎹槸鍚︽弧瓒冲嚱鏁拌姹?
+并且编译器还会考虑到built-in type cast，看看转换后的数据是否满足函数要求
 
 ## Default Arguments
 
@@ -729,9 +729,9 @@ int main(){
 }
 ```
 
-榛樿鍙傛暟蹇呴』鏀惧湪鏈€鍚?
+默认参数必须放在最后
 
-鎴戜滑鍙兘鍐欏涓嬭〃杈撅細
+我们只能写如下表达：
 
 ```cpp
 void fun(int a=1,int b=3,int c=5);
@@ -739,14 +739,14 @@ void fun(int a=1,int b=3,int c=5);
 void fun(int a, int b, int c){
     ......
 }
-//鑰屼笉鑳藉湪绗簩娆″畾涔夊嚱鏁扮殑鏃跺€欏啀鍐欎竴閬嶉粯璁ゅ弬鏁帮紝涓嶇劧浼歳edefinition error
+//而不能在第二次定义函数的时候再写一遍默认参数，不然会redefinition error
 ```
 
-- **榛樿鍙傛暟鏄潤鎬佺粦瀹氱殑锛?* 缂栬瘧鍣ㄥ湪缂栬瘧鏌愪釜 `.cpp` 鏂囦欢鏃讹紝鍙湅璇ユ枃浠朵腑鍙鐨勫嚱鏁板０鏄庢潵鍐冲畾榛樿鍙傛暟濉粈涔堛€?
+- **默认参数是静态绑定的：** 编译器在编译某个 `.cpp` 文件时，只看该文件中可见的函数声明来决定默认参数填什么。
 
-![image-20260410212346862](img/oop_assets/image-20260410212346862.png)
+![image-20260410212346862](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260410212346862.png)
 
-![image-20260410212443380](img/oop_assets/image-20260410212443380.png)
+![image-20260410212443380](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260410212443380.png)
 
 # 8.Constants
 
@@ -755,8 +755,8 @@ void fun(int a, int b, int c){
 ### CONSTANT&POINTER
 
 ```CPP
-const 鍦ㄦ寚閽堝乏杈硅〃绀烘寚閽堟寚鍚戠殑鍐呭鏄父閲?
-const 鍦?鍙宠竟琛ㄧず鎸囬拡鏈韩鏄父閲?
+const 在指针左边表示指针指向的内容是常量
+const 在*右边表示指针本身是常量
 ```
 
 ### Pointer to const
@@ -773,10 +773,10 @@ p1 = &max;
 int *p2=&max;//error
 ```
 
-浠ヤ笂浠ｇ爜鎬昏涓変釜閿欒锛?
+以上代码总计三个错误：
 
-- 绗竴銆佷簩涓槸鍥犱负褰撴垜浠畾涔夋寚鍚戝父閲忕殑鎸囬拡锛岄偅涔堟垜浠笉鑳介€氳繃瑙ｅ紩鐢ㄦ柟寮忎慨鏀规寚鍚戠殑鍊硷紱
-- 绗笁涓槸鍥犱负鎴戜滑涓嶈兘鐢ㄤ笉鏄寚鍚戝父閲忕殑鎸囬拡鎸囧悜甯搁噺锛?=浣嗘槸甯搁噺鎸囬拡鍙互鎸囧悜闈炲父閲?=锛岀悊瑙ｄ负鎸囧悜甯搁噺鐨勬寚閽堝彧鏄姞鍏ヤ簡鍙闄愬埗銆?
+- 第一、二个是因为当我们定义指向常量的指针，那么我们不能通过解引用方式修改指向的值；
+- 第三个是因为我们不能用不是指向常量的指针指向常量，==但是常量指针可以指向非常量==，理解为指向常量的指针只是加入了只读限制。
 
 ### Const Pointer
 
@@ -790,8 +790,8 @@ pv1 = &v2;//error
 int* const pv2 = &max;//error
 ```
 
-- 绗竴涓敊璇槸鐢变簬褰撴垜浠畾涔変簡涓€涓父閲忔寚閽堬紝閭ｄ箞鎴戜滑灏卞啀涔熸棤娉曚慨鏀逛粬鐨勬寚鍚?
-- 绗簩涓敊璇槸鐢变簬鎴戜滑铏界劧瀹氫箟`pv2`涓哄父閲忔寚閽堬紝浣嗘槸鍏舵寚鍚戠殑閲忎粛鐒跺彲浠ラ€氳繃璇ュ父閲忔寚閽堜慨鏀癸紝閭ｄ箞`max`鐨勫父閲忔€у氨鏃犳硶寰楀埌缁存姢銆?
+- 第一个错误是由于当我们定义了一个常量指针，那么我们就再也无法修改他的指向
+- 第二个错误是由于我们虽然定义`pv2`为常量指针，但是其指向的量仍然可以通过该常量指针修改，那么`max`的常量性就无法得到维护。
 
 ### Constant Pointer to a const
 
@@ -804,32 +804,32 @@ pv1 = &v2;//error
 *pv1 = v2;//error
 ```
 
-- 绗竴涓敊璇樉鑰屾槗瑙?
-- 绗簩涓敊璇湪浜庝笉鑳介€氳繃鎸囧悜甯搁噺鐨勬寚閽堜慨鏀瑰彉閲?
+- 第一个错误显而易见
+- 第二个错误在于不能通过指向常量的指针修改变量
 
 ## Temporaries
 
-鎴戜滑鍦ㄤ笂鏂囦腑缁橠ate绫昏祴鍊肩殑鏃跺€欐湁涓€鍙ワ細
+我们在上文中给Date类赋值的时候有一句：
 
 `Date date[3] = {Date(2003,4,5),Date(2003,4,5)};`
 
-杩欏彞涓殑`Date(2003,4,5)`灏变細鏋勯€犱复鏃跺璞★紝杩欎釜涓存椂瀵硅薄浼氳缂栬瘧鍣ㄨ涓哄父閲?
+这句中的`Date(2003,4,5)`就会构造临时对象，这个临时对象会被编译器视为常量
 
 ## Classes
 
 ### Static data members
 
-褰撲綘鍦ㄧ被鍐呭畾涔変簡涓€涓潤鎬佸彉閲忔垚鍛橈紝閭ｄ箞杩欎釜绫荤殑鎵€鏈夊疄浣撻兘鍏辩敤杩欎竴涓彉閲忥紝涓嶄細鍒涢€犳柊鐨?
+当你在类内定义了一个静态变量成员，那么这个类的所有实体都共用这一个变量，不会创造新的
 
-![image-20260410224655150](img/oop_assets/image-20260410224655150.png)
+![image-20260410224655150](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260410224655150.png)
 
-绫婚潤鎬佸彉閲忕殑姝ｇ‘瀹氫箟鏂瑰紡锛?
+类静态变量的正确定义方式：
 
-鍙兘鍦ㄧ被澶栧垵濮嬪寲
+只能在类外初始化
 
-绫诲涓嶉渶瑕乻tatic
+类外不需要static
 
-绫诲煙鍚?
+类域名
 
 ```cpp
 class Myclass{
@@ -838,11 +838,11 @@ class Myclass{
 int Myclass::obj = 8;
 ```
 
-const鏁版嵁鎴愬憳蹇呴』浣跨敤鍒濆鍖栧垪琛ㄥ垵濮嬪寲
+const数据成员必须使用初始化列表初始化
 
-鑰宻tatic const 搴旇鍗曠嫭澶勭悊
+而static const 应该单独处理
 
-鑰屼笖鍒濆鍖栭『搴忕湅鐨勬槸鍦ㄧ被鍐呭畾涔夐『搴忥紝鑰岄潪鍒楄〃椤哄簭
+而且初始化顺序看的是在类内定义顺序，而非列表顺序
 
 ```cpp
 class A{
@@ -855,7 +855,7 @@ private:
     const int r;
 };
 const int A::b = 10;
-A::A(int i):r(i),a(r+1);//姝ｅ鍒氭墠鎵€璇达紝浜庢槸杩欎釜璧嬪€间笉鑳芥垚鍔?
+A::A(int i):r(i),a(r+1);//正如刚才所说，于是这个赋值不能成功
 ```
 
 ### Const member functions
@@ -876,7 +876,7 @@ private:
 
 ### Const objects
 
-绫荤殑瀹炰綋鐨勭敓瀛樻湡鍐呮病鏈夋暟鎹垚鍛樿鏀瑰彉
+类的实体的生存期内没有数据成员被改变
 
 ```cpp
 int main( ) {
@@ -886,28 +886,28 @@ int main( ) {
 }
 ```
 
-**甯搁噺瀵硅薄锛圕onst Objects锛夊彧鑳借皟鐢ㄢ€滄壙璇轰笉淇敼鏁版嵁鈥濈殑鏂规硶锛圕onst Member Functions锛夈€?*
+**常量对象（Const Objects）只能调用“承诺不修改数据”的方法（Const Member Functions）。**
 
 ### Mutable
 
-mutable鏄父閲忓璞＄殑璞佸厤绗?
+mutable是常量对象的豁免符
 
 ```cpp
 class Date {
 public:
-    // ... 鏋勯€犲嚱鏁?...
-    int year() const { return ++y; } // 娉ㄦ剰杩欓噷锛歝onst 鍑芥暟
+    // ... 构造函数 ...
+    int year() const { return ++y; } // 注意这里：const 函数
 private:
-    mutable int y; // 娉ㄦ剰杩欓噷锛歮utable 淇グ
+    mutable int y; // 注意这里：mutable 修饰
     int m, d;
 };
 ```
 
 # 9.Inline Functions
 
-瀹忓湪鏇挎崲鐨勬椂鍊欎細鏈夊悇绉嶅悇鏍风殑闂
+宏在替换的时候会有各种各样的问题
 
-鎴戜滑寮曞叆inline function锛岄€氳繃inline function鍙互浣垮緱缁忓父琚皟鐢ㄧ殑鍑芥暟鍑忓皯杩愯鏃堕棿
+我们引入inline function，通过inline function可以使得经常被调用的函数减少运行时间
 
 ```cpp
 inline int add(int x,int y,int z){
@@ -919,19 +919,19 @@ int main(){
 }
 ```
 
-锛?锛夊繀椤诲湪璋冪敤鍓嶅畾涔?
+（1）必须在调用前定义
 
-锛?锛変笉瑕佹湁寰幆 / switch
+（2）不要有循环 / switch
 
-锛?锛変笉瑕佹湁寮傚父澶勭悊
+（3）不要有异常处理
 
-锛?锛変笉瑕侀€掑綊
+（4）不要递归
 
 ## Class & Inline
 
-绫诲唴瀹炵幇鐨勫嚱鏁拌嚜鍔ㄥ氨鏄痠nline
+类内实现的函数自动就是inline
 
-濡傛灉鍑芥暟鍦ㄧ被澶栧疄鐜帮紝閭ｄ箞闇€瑕佸姞涓奿nline鏉ヨ〃鏄庝粬鏄痠nline
+如果函数在类外实现，那么需要加上inline来表明他是inline
 
 ```cpp
 #include<iostream>
@@ -952,15 +952,15 @@ inline void Point::print(const string& msg)cosnt{
 }
 ```
 
-==inline搴旇鍜岀被鐨勫畾涔夊湪鍚屼竴涓枃浠朵腑==
+==inline应该和类的定义在同一个文件中==
 
-inline 鍑芥暟蹇呴』鍦ㄢ€滄瘡涓娇鐢ㄥ畠鐨勭炕璇戝崟鍏冿紙.cpp锛変腑閮借兘鐪嬪埌瀹氫箟
+inline 函数必须在“每个使用它的翻译单元（.cpp）中都能看到定义
 
 # 10.Name Control
 
-static鍐呯疆鍨嬪彉閲忚鍒濆鍖栨垚0锛屼絾鏄痵tatic user defined types浼氳constructor瀹氫箟
+static内置型变量被初始化成0，但是static user defined types会被constructor定义
 
-![image-20260411110220662](img/oop_assets/image-20260411110220662.png)
+![image-20260411110220662](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260411110220662.png)
 
 # Controling linkage
 
@@ -973,22 +973,22 @@ Visibility:external linkage, internal linkage
 
 | #    | namespace                                   | class/struct                      |
 | ---- | ------------------------------------------- | --------------------------------- |
-| 1    | **鍙兘鍏ㄥ眬鍑虹幇**锛屼笉鑳藉啓鍦ㄥ嚱鏁颁綋閲?         | 鍙互鍦ㄥ嚱鏁颁綋閲屽畾涔夊眬閮ㄧ被          |
-| 2    | 缁撴潫 **涓嶇敤鍒嗗彿**                           | 缁撴潫蹇呴』鍐欏垎鍙?                   |
-| 3    | **鍚屽悕 namespace 鍙媶鍒?* 鍒板涓枃浠?澶存枃浠?| 鍚屽悕 class 鍙兘瀹氫箟涓€娆?          |
-| 4    | 鍙互 **璧峰埆鍚?*`namespace ALib = MyLib;`    | 璧峰埆鍚嶈鐢?`using A = SomeClass;` |
-| 5    | **涓嶈兘瀹炰緥鍖?*                              | class 鍙互鏋勯€犲璞?               |
+| 1    | **只能全局出现**，不能写在函数体里          | 可以在函数体里定义局部类          |
+| 2    | 结束 **不用分号**                           | 结束必须写分号                    |
+| 3    | **同名 namespace 可拆分** 到多个文件/头文件 | 同名 class 只能定义一次           |
+| 4    | 可以 **起别名**`namespace ALib = MyLib;`    | 起别名要用 `using A = SomeClass;` |
+| 5    | **不能实例化**                              | class 可以构造对象                |
 
 ```cpp
-// 鏂囦欢 a.h
+// 文件 a.h
 namespace MyLib {
-    void f();            // 鍙啓澹版槑
+    void f();            // 只写声明
 }
 
-// 鏂囦欢 a.cpp
+// 文件 a.cpp
 #include "a.h"
-namespace MyLib {        // 鍚屽悕銆佸悓绾у埆锛岃嚜鍔ㄥ悎骞?
-    void f() { ... }     // 鍐欏畾涔?
+namespace MyLib {        // 同名、同级别，自动合并
+    void f() { ... }     // 写定义
 }
 ```
 
@@ -1022,7 +1022,7 @@ void X::func() {
 void  main(){ } ///:~
 ```
 
-鎴戜滑杩樺彲浠ュ彧浣跨敤鍛藉悕绌洪棿涓殑閮ㄥ垎鍑芥暟瀵煎叆
+我们还可以只使用命名空间中的部分函数导入
 
 ```cpp
 namespace calculator 
@@ -1041,7 +1041,7 @@ void main()
 
 # 11.References & the Copy-Constructor
 
-杩斿洖寮曠敤锛?
+返回引用：
 
 ```cpp
 int& g(int &x){
@@ -1050,13 +1050,13 @@ int& g(int &x){
 }
 ```
 
-杩斿洖寮曠敤鐨勫ソ澶勬槸鎴戜滑鍙互閾惧紡鎿嶄綔`g(g(a))`锛屽苟锛氬湪杩欎釜`g(a)`涓紝a琚嚜鍔ㄧ粦瀹氫簡浠栫殑寮曠敤x
+返回引用的好处是我们可以链式操作`g(g(a))`，并：在这个`g(a)`中，a被自动绑定了他的引用x
 
 ## Const Reference
 
-鏃㈠彲浠ョ粦瀹氭櫘閫氬彉閲忥紙`g(a)` 姝ｅ父杩愯锛夛紝涔熷彲浠ョ粦瀹氫复鏃跺€?/ 瀛楅潰閲忥紙`g(1)` 姝ｅ父杩愯锛夈€?
+既可以绑定普通变量（`g(a)` 正常运行），也可以绑定临时值 / 字面量（`g(1)` 正常运行）。
 
-鍥犱负缂栬瘧鍣ㄤ細涓轰复鏃跺€煎垱寤轰竴涓?鈥滀复鏃跺璞♀€濓紝璁╁父寮曠敤缁戝畾鍒拌繖涓复鏃跺璞′笂锛堟櫘閫氬紩鐢ㄤ笉鍏佽杩欎箞鍋氾紝鍙湁甯稿紩鐢ㄥ彲浠ワ級銆?
+因为编译器会为临时值创建一个 “临时对象”，让常引用绑定到这个临时对象上（普通引用不允许这么做，只有常引用可以）。
 
 ```cpp
 void f(int& i){i++;}
@@ -1088,11 +1088,11 @@ void main()
 } ///:~
 ```
 
-鎴戜滑鍦ㄨ繖涓繃绋嬩腑鐩存帴淇敼浜嗘寚閽堟寚鍚戠殑鍐呭瓨
+我们在这个过程中直接修改了指针指向的内存
 
 ## The copy-constructor
 
-鍐欐硶锛歚X::X(const X& .)`
+写法：`X::X(const X& .)`
 
 ```cpp
 #include <iostream>
@@ -1106,7 +1106,7 @@ public:
     }
     Date(const Date & r){
         year=r.year; month=r.month; day=r.day;
-        cout<<鈥淐opy constructor called."<<endl;
+        cout<<“Copy constructor called."<<endl;
     }
     ~Date( ) { cout<<"Destructor called."<<endl; }
 };
@@ -1116,7 +1116,7 @@ void main() {
 }
 ```
 
-褰撲护`d2=d1`鏋勯€犵殑鏃跺€欙紝璋冪敤鎷疯礉鏋勯€?
+当令`d2=d1`构造的时候，调用拷贝构造
 
 
 The Copy Constructor is called when
@@ -1127,7 +1127,7 @@ The Copy Constructor is called when
 
 The Copy Constructor **is not called whenpassing arguments by references**. Because no new object is created.
 
-![image-20260411170745301](img/oop_assets/image-20260411170745301.png)銆?
+![image-20260411170745301](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260411170745301.png)、
 
 ## Pointers to members
 
@@ -1153,11 +1153,11 @@ int main(){
 }
 ```
 
-璋冪敤鏂瑰紡锛?
+调用方式：
 
 ```cpp
-瀵硅薄.*鎸囬拡鍚?
-瀵硅薄鎸囬拡->*鎸囬拡鍚?
+对象.*指针名
+对象指针->*指针名
 ```
 
 ```cpp
@@ -1171,16 +1171,16 @@ int main() {
     Widget w;
     Widget* wp = &w;
 
-    // 瀹氫箟涓€涓寚鍚慦idget绫讳腑鎴愬憳鍑芥暟鐨勬寚閽坧mem
-    // 鍑芥暟绛惧悕锛氳繑鍥瀡oid锛屽弬鏁癷nt锛宑onst淇グ
-    // 璁╁畠鎸囧悜Widget::h鍑芥暟
+    // 定义一个指向Widget类中成员函数的指针pmem
+    // 函数签名：返回void，参数int，const修饰
+    // 让它指向Widget::h函数
     void (Widget::*pmem)(int) const = &Widget::h;
 
-    // 閫氳繃瀵硅薄w璋冪敤
-    (w.*pmem)(1);  // 杈撳嚭锛歐idget::h()
+    // 通过对象w调用
+    (w.*pmem)(1);  // 输出：Widget::h()
 
-    // 閫氳繃瀵硅薄鎸囬拡wp璋冪敤
-    (wp->*pmem)(2); // 杈撳嚭锛歐idget::h()
+    // 通过对象指针wp调用
+    (wp->*pmem)(2); // 输出：Widget::h()
     return 0;
 }
 ```
@@ -1209,11 +1209,11 @@ const Integer Integer::operator+(const Integer& rv)const{
 }
 ```
 
-杩欎釜operator鐨勮皟鐢ㄤ簨瀹炰笂鏄痐Integer c = a+b;//a.operator+(b)`
+这个operator的调用事实上是`Integer c = a+b;//a.operator+(b)`
 
-浣跨敤寮曠敤绫诲瀷鍙互閬垮厤杩囩▼涓骇鐢熺殑鎷疯礉
+使用引用类型可以避免过程中产生的拷贝
 
-![image-20260411173058700](img/oop_assets/image-20260411173058700.png)
+![image-20260411173058700](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260411173058700.png)
 
 ```cpp
 class complex
@@ -1242,11 +1242,11 @@ compelx& complex::operator+=(const complex& c){
 }
 ```
 
-![image-20260411173332518](img/oop_assets/image-20260411173332518.png)
+![image-20260411173332518](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260411173332518.png)
 
 ## Friend Functions
 
-鍙嬪厓鍑芥暟閲嶈浇鐨勫ソ澶勬槸鍙嬪厓鍑芥暟鍙互瀹炵幇鏁板瓧+瀵硅薄鐨勬搷浣?
+友元函数重载的好处是友元函数可以实现数字+对象的操作
 
 ```cpp
 class complex
@@ -1284,7 +1284,7 @@ void complex::print() const{
 }
 ```
 
-鍙︿竴涓潪甯哥粡鍏哥殑渚嬪瓙锛氶噸杞?<鐨勬椂鍊欏繀椤荤敤friend
+另一个非常经典的例子：重载<<的时候必须用friend
 
 ```cpp
 class complex {
@@ -1298,15 +1298,15 @@ ostream& operator<<(ostream& os, const complex& c) {
 }
 ```
 
-![image-20260411180106580](img/oop_assets/image-20260411180106580.png)
+![image-20260411180106580](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260411180106580.png)
 
 If the first operand is an object of an class, the operator should be declared as a member function. Otherwise, it should be declared as a friend function.
 
 ## Special Operators
 
-浠ヤ笅鐨勬搷浣滅鍙兘琚噸杞戒负鎴愬憳鍑芥暟
+以下的操作符只能被重载为成员函数
 
-![image-20260411191554287](img/oop_assets/image-20260411191554287.png)
+![image-20260411191554287](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260411191554287.png)
 
 ## Increment & Decrement
 
@@ -1325,19 +1325,19 @@ Increase Increase::operator++(int)//postfix
 }
 ```
 
-璇句欢涓婅繖涓嚱鏁版病鏈変娇鐢ㄥ紩鐢ㄥ瀷杩斿洖锛屼絾浜嬪疄涓婃垜浠簲璇ュ啓`Increase& Increase::operator`
+课件上这个函数没有使用引用型返回，但事实上我们应该写`Increase& Increase::operator`
 
-prefix闇€瑕佷紶鍙傛槸鍗犱綅绗︼紝鏃犲疄闄呮剰涔?
+prefix需要传参是占位符，无实际意义
 
 ## Overloading Assignment
 
-閲嶈浇`=`浣垮緱鑷畾涔夌被鍨嬪彲浠ヨ祴鍊?
+重载`=`使得自定义类型可以赋值
 
 ```cpp
 Date t1(2025, 4, 11);
-Date t2 = t1;  // 鎷疯礉鏋勯€狅細t2鍒氳癁鐢?
-Date t3;       // 鍏堣皟鐢ㄩ粯璁ゆ瀯閫?
-t3 = t2;       // 璧嬪€艰繍绠楃锛歵3宸茬粡瀛樺湪锛岀幇鍦ㄦ敼瀹冪殑鍊?
+Date t2 = t1;  // 拷贝构造：t2刚诞生
+Date t3;       // 先调用默认构造
+t3 = t2;       // 赋值运算符：t3已经存在，现在改它的值
 ```
 
 
@@ -1348,35 +1348,35 @@ class A {
 public:
     A(int i) { p = new int(i); }
     ~A() { delete p; }
-    // 缂栬瘧鍣ㄨ嚜鍔ㄧ敓鎴愭祬鎷疯礉璧嬪€艰繍绠楃
+    // 编译器自动生成浅拷贝赋值运算符
 };
 
 int main() {
     A a(5);
     A b(10);
-    b = a;  // 娴呮嫹璐濓細b.p = a.p锛屼袱涓寚閽堥兘鎸囧悜5
-    // 绋嬪簭缁撴潫鏃讹紝a鍜宐閮戒細鏋愭瀯锛屽悓涓€鍧楀唴瀛樿delete涓ゆ锛岀洿鎺ュ穿婧冿紒
-    // 鑰屼笖b鍘熸潵鎸囧悜鐨?0鐨勫唴瀛樻案杩滀涪澶变簡锛屽唴瀛樻硠婕?
+    b = a;  // 浅拷贝：b.p = a.p，两个指针都指向5
+    // 程序结束时，a和b都会析构，同一块内存被delete两次，直接崩溃！
+    // 而且b原来指向的10的内存永远丢失了，内存泄漏
 }
 ```
 
-**鍙绫绘湁鍔ㄦ€佸垎閰嶇殑璧勬簮锛堟寚閽堟垚鍛樸€佹枃浠跺彞鏌勩€佺綉缁滆繛鎺ョ瓑锛夛紝灏卞繀椤绘墜鍔ㄥ啓娣辨嫹璐濈殑璧嬪€艰繍绠楃锛屽悓鏃朵篃瑕佸啓鎷疯礉鏋勯€犲嚱鏁般€?*
+**只要类有动态分配的资源（指针成员、文件句柄、网络连接等），就必须手动写深拷贝的赋值运算符，同时也要写拷贝构造函数。**
 
 ```cpp
 class A {
     int* p;
 public:
     A(int i) { p = new int(i); }
-    // 鎷疯礉鏋勯€犲嚱鏁帮紙蹇呴』鍜岃祴鍊艰繍绠楃涓€璧峰啓锛?
+    // 拷贝构造函数（必须和赋值运算符一起写）
     A(const A& rhs) {
         p = new int(*rhs.p);
     }
-    // 璧嬪€艰繍绠楃閲嶈浇
+    // 赋值运算符重载
     A& operator=(const A& rhs) {
-        if (this == &rhs) return *this; // 鑷祴鍊兼鏌?
-        delete p;                       // 閲婃斁鑷繁鍘熸潵鐨勫唴瀛?
-        p = new int(*rhs.p);            // 娣辨嫹璐?
-        return *this;                   // 杩斿洖鑷繁
+        if (this == &rhs) return *this; // 自赋值检查
+        delete p;                       // 释放自己原来的内存
+        p = new int(*rhs.p);            // 深拷贝
+        return *this;                   // 返回自己
     }
     ~A() { delete p; }
 };
@@ -1384,27 +1384,27 @@ public:
 
 ## Automatic type conversion
 
-鍏充簬鏋勯€犲嚱鏁拌浆鎹㈠彲浠ュ弬鑰冨墠鏂囦腑鐨勮櫄鏁扮被渚嬪瓙
+关于构造函数转换可以参考前文中的虚数类例子
 
-濡傛灉涓嶆兂鑷姩杞崲鍔犲叆explicit
+如果不想自动转换加入explicit
 
 ```cpp
 class complex {
 public:
-    // 馃憞 鍔犱簡 explicit锛岀姝㈤殣寮忚浆鎹?
+    // 👇 加了 explicit，禁止隐式转换
     explicit complex(double r = 0, double i = 0) : real(r), imag(i) {}
 };
 
 int main() {
     complex c1(3.5, 5.5);
-    complex c2 = c1 + 1.5;  // 鉂?缂栬瘧鎶ラ敊锛佺姝㈤殣寮忚浆鎹?
-    complex c3 = c1 + complex(1.5, 0);  // 鉁?蹇呴』鏄惧紡鍐?
+    complex c2 = c1 + 1.5;  // ❌ 编译报错！禁止隐式转换
+    complex c3 = c1 + complex(1.5, 0);  // ✅ 必须显式写
 }
 ```
 
-### 杞崲杩愮畻绗?
+### 转换运算符
 
-鏋勯€犲嚱鏁板彧鑳借鍏朵粬绫昏浆鍖栨垚褰撳墠绫伙紝浣嗕笉鑳芥妸褰撳墠绫昏浆鍖栨垚鍏朵粬绫伙紝杩欐椂鍊欐垜浠氨瑕佺敤杞崲杩愮畻绗?
+构造函数只能让其他类转化成当前类，但不能把当前类转化成其他类，这时候我们就要用转换运算符
 ```cpp
 class complex {
 private:
@@ -1412,16 +1412,16 @@ private:
 public:
     complex(double r = 0, double i = 0) : real(r), imag(i) {}
     
-    // 馃憞 杞崲杩愮畻绗︼細鎶?complex 杞垚 int
+    // 👇 转换运算符：把 complex 转成 int
     operator int() {
-        return static_cast<int>(real);  // 杩斿洖瀹為儴鐨勬暣鏁伴儴鍒?
+        return static_cast<int>(real);  // 返回实部的整数部分
     }
 };
 
 int main() {
     complex c(3.5, 5.5);
-    int x = c;  // 鉁?鑷姩璋冪敤 operator int()锛寈 = 3
-    cout << x << endl;  // 杈撳嚭 3
+    int x = c;  // ✅ 自动调用 operator int()，x = 3
+    cout << x << endl;  // 输出 3
 }
 ```
 
@@ -1451,43 +1451,43 @@ Constructor:40
 40
 ```
 
-## 瀵硅薄鍒涘缓鐨勬湰璐?
+## 对象创建的本质
 
-C++ 涓垱寤哄璞″繀鐒惰Е鍙戜袱涓楠わ細
+C++ 中创建对象必然触发两个步骤：
 
-1. 涓哄璞″垎閰嶅瓨鍌ㄧ┖闂达紙鍙€変綅缃細闈欐€佸瓨鍌ㄥ尯銆佹爤銆佸爢锛?
-2. 璋冪敤鏋勯€犲嚱鏁板垵濮嬪寲璇ュ瓨鍌ㄧ┖闂?
+1. 为对象分配存储空间（可选位置：静态存储区、栈、堆）
+2. 调用构造函数初始化该存储空间
 
-## 鍗曚釜瀵硅薄鐨刞new`/`delete`
+## 单个对象的`new`/`delete`
 
-### 鏍稿績璇硶
+### 核心语法
 
-- 鍒涘缓锛歚new 绫诲瀷(鍒濆鍖栧櫒);`锛堟棤鍒濆鍖栧櫒鏃惰皟鐢ㄩ粯璁ゆ瀯閫犲嚱鏁帮級
-- 閿€姣侊細`delete 鎸囬拡鍚?`
+- 创建：`new 类型(初始化器);`（无初始化器时调用默认构造函数）
+- 销毁：`delete 指针名;`
 
 
 
-## 瀵硅薄鏁扮粍鐨刞new`/`delete`
+## 对象数组的`new`/`delete`
 
-### 鏍稿績璇硶
+### 核心语法
 
-- 鍒涘缓锛歚new 绫诲瀷[鏁扮粍澶у皬];`
-- 閿€姣侊細`delete [] 鎸囬拡鍚?`锛?*蹇呴』鍔燻[]`**锛屽惁鍒欏彧浼氶攢姣佺涓€涓厓绱狅紝瀵艰嚧鍐呭瓨娉勬紡锛?
+- 创建：`new 类型[数组大小];`
+- 销毁：`delete [] 指针名;`（**必须加`[]`**，否则只会销毁第一个元素，导致内存泄漏）
 
-### 鍏抽敭鐗规€?
+### 关键特性
 
-1. `new[]`浼氫负鏁扮粍涓?*姣忎釜鍏冪礌鑷姩璋冪敤榛樿鏋勯€犲嚱鏁?*
-2. `delete[]`浼氫负鏁扮粍涓?*姣忎釜鍏冪礌鑷姩璋冪敤鏋愭瀯鍑芥暟**
-3. 浠讳綍鐢盽new`鍒涘缓鐨勫璞?/ 鏁扮粍锛屽繀椤荤敱瀵瑰簲鐨刞delete`/`delete[]`閿€姣?
-4. 鍚屼竴涓寚閽?*鍙兘琚玚delete`/`delete[]`鎵ц涓€娆?*锛岄噸澶嶉噴鏀句細瀵艰嚧绋嬪簭閿欒
+1. `new[]`会为数组中**每个元素自动调用默认构造函数**
+2. `delete[]`会为数组中**每个元素自动调用析构函数**
+3. 任何由`new`创建的对象 / 数组，必须由对应的`delete`/`delete[]`销毁
+4. 同一个指针**只能被`delete`/`delete[]`执行一次**，重复释放会导致程序错误
 
 # 14.Inheritance & Composition
 
-鏈儴鍒嗚璁轰唬鐮佸鐢ㄧ殑涓ょ褰㈠紡锛?
+本部分讨论代码复用的两种形式：
 
 ## Composition
 
-鍦ㄦ柊绫讳腑鍒涘缓宸叉湁绫荤殑瀵硅薄
+在新类中创建已有类的对象
 
 ```cpp
 //Useful.h
@@ -1558,28 +1558,28 @@ return 0;
 
 Y is a derived class and X is a base class
 
-鍩虹被蹇呴』鍏堝畾涔夛紝涓嶇劧娌℃硶鐢?
+基类必须先定义，不然没法用
 
 ### The constructor initializer list
 
-鏋勯€犲嚱鏁板拰鏋愭瀯鍑芥暟涓嶄細琚户鎵匡紝璧嬪€艰繍绠椾篃涓嶄細琚户鎵?
+构造函数和析构函数不会被继承，赋值运算也不会被继承
 
-瀛愮被鐨勬瀯閫犲嚱鏁版棤娉曡闂埗绫荤殑private
+子类的构造函数无法访问父类的private
 
-鎵€浠ユ垜浠紩鍑轰互涓嬭В鍐冲瓙绫绘瀯閫犲嚱鏁拌闂埗绫籶rivate鐨勬柟娉?
+所以我们引出以下解决子类构造函数访问父类private的方法
 
 ```cpp
 class X {
     int a;
 public:
-    X(int i) : a(i) { }  // X 娌℃湁榛樿鏋勯€?
+    X(int i) : a(i) { }  // X 没有默认构造
 };
 
 class Y {
     int b;
-    X x;  // 鎴愬憳瀵硅薄
+    X x;  // 成员对象
 public:
-    // 蹇呴』鐢ㄥ垵濮嬪寲鍒楄〃缁?x 浼犲弬
+    // 必须用初始化列表给 x 传参
     Y(int i, int j) : b(i), X(j) { }
 };
 ```
@@ -1592,45 +1592,45 @@ class X {
 public:
     X(int i=0): a(i) {cout<<"Constructor X:"<<a<<endl;}
 };
-class Y: public X {  // 1. 缁ф壙锛歒鏄疿鐨勫瓙绫?
-    int b;           // 鏅€氭垚鍛?
-    X x1, x2;        // 2. 缁勫悎锛歒閲屽寘鍚?涓猉瀵硅薄x1銆亁2锛堝０鏄庨『搴忥細x1鍦ㄥ墠锛寈2鍦ㄥ悗锛?
+class Y: public X {  // 1. 继承：Y是X的子类
+    int b;           // 普通成员
+    X x1, x2;        // 2. 组合：Y里包含2个X对象x1、x2（声明顺序：x1在前，x2在后）
 public:
-    // 鍒濆鍖栧垪琛細椤哄簭鏄?b(i), x2(j), x1(m), X(n)
+    // 初始化列表：顺序是 b(i), x2(j), x1(m), X(n)
     Y(int i, int j, int m, int n): b(i), x2(j), x1(m), X(n)
     {cout<<"Constructor Y:"<<b<<endl;}
 };
 int main() {
-    Y y(1,2,3,4);  // 鍒涘缓Y瀵硅薄y锛屼紶鍙俰=1, j=2, m=3, n=4
+    Y y(1,2,3,4);  // 创建Y对象y，传参i=1, j=2, m=3, n=4
     return 0;
 }
-Constructor X: 4  鈫?鈶?鍩虹被X瀛愬璞℃瀯閫?
-Constructor X: 3  鈫?鈶?鎴愬憳瀵硅薄x1鏋勯€?
-Constructor X: 2  鈫?鈶?鎴愬憳瀵硅薄x2鏋勯€?
-Constructor Y: 1  鈫?鈶?Y鑷繁鐨勬瀯閫犲嚱鏁颁綋鎵ц
+Constructor X: 4  → ① 基类X子对象构造
+Constructor X: 3  → ② 成员对象x1构造
+Constructor X: 2  → ③ 成员对象x2构造
+Constructor Y: 1  → ④ Y自己的构造函数体执行
 ```
 
-鍏堟瀯閫犲熀绫?>鎸夌収澹版槑椤哄簭鏋勯€犳垚鍛樺璞?>鏋勫缓鑷韩
+先构造基类->按照声明顺序构造成员对象->构建自身
 
 ## Name hiding
 
-| 姒傚康                    | 鑻辨枃鍏ㄧО    | 鏍稿績瀹氫箟                                                     | 浣滅敤鍩?                     | 鍏抽敭鐗瑰緛                                                 |
+| 概念                    | 英文全称    | 核心定义                                                     | 作用域                      | 关键特征                                                 |
 | ----------------------- | ----------- | ------------------------------------------------------------ | --------------------------- | -------------------------------------------------------- |
-| **閲嶈浇 (Overloading)**  | Overloading | 鍚屼竴浣滅敤鍩熷唴锛屽嚱鏁板悕鐩稿悓銆佸弬鏁板垪琛ㄤ笉鍚岋紙涓暟 / 绫诲瀷 / 椤哄簭锛?| **鍚屼竴涓被 / 鍚屼竴涓綔鐢ㄥ煙** | 涓嶅奖鍝嶇户鎵匡紝浠呭湪鏈被鐢熸晥锛岀紪璇戝櫒鏍规嵁鍙傛暟鑷姩鍖归厤         |
-| **閲嶅畾涔?(Redefining)** | Redefining  | 缁ф壙涓紝瀛愮被閲嶅啓鐖剁被鐨?*鏅€氾紙闈炶櫄锛夋垚鍛樺嚱鏁?*               | 鐖跺瓙绫讳笉鍚屼綔鐢ㄥ煙            | 瀛愮被鍚屽悕鍑芥暟浼?*闅愯棌**鐖剁被鎵€鏈夊悓鍚嶅嚱鏁帮紝鏃犺鍙傛暟鏄惁鐩稿悓 |
-| **閲嶅啓 (Overriding)**   | Overriding  | 缁ф壙涓紝瀛愮被閲嶅啓鐖剁被鐨?*铏氾紙virtual锛夋垚鍛樺嚱鏁?*              | 鐖跺瓙绫讳笉鍚屼綔鐢ㄥ煙            | 鏄鎬佺殑鍩虹锛岃姹傚嚱鏁扮鍚嶅畬鍏ㄤ竴鑷达紝涓嶄細闅愯棌鐖剁被鐗堟湰     |
+| **重载 (Overloading)**  | Overloading | 同一作用域内，函数名相同、参数列表不同（个数 / 类型 / 顺序） | **同一个类 / 同一个作用域** | 不影响继承，仅在本类生效，编译器根据参数自动匹配         |
+| **重定义 (Redefining)** | Redefining  | 继承中，子类重写父类的**普通（非虚）成员函数**               | 父子类不同作用域            | 子类同名函数会**隐藏**父类所有同名函数，无论参数是否相同 |
+| **重写 (Overriding)**   | Overriding  | 继承中，子类重写父类的**虚（virtual）成员函数**              | 父子类不同作用域            | 是多态的基础，要求函数签名完全一致，不会隐藏父类版本     |
 
 ```cpp
 class Derived1 : public Base
 {
 public:
-    // 鍙噸瀹氫箟浜唃()锛屽畬鍏ㄦ病纰癴()
+    // 只重定义了g()，完全没碰f()
     void g() const {}
 };
 class Derived2 : public Base
 {
 public:
-    // Redefinition: 瀹屽叏閲嶅啓浜嗙埗绫荤殑鏃犲弬f()锛堢鍚嶅畬鍏ㄤ竴鑷达級
+    // Redefinition: 完全重写了父类的无参f()（签名完全一致）
     int f() const
     {
         cout << "Derived2::f()\n";
@@ -1640,7 +1640,7 @@ public:
 class Derived3 : public Base
 {
 public:
-    // Change return type: 鎶婅繑鍥炲€间粠int鏀规垚void锛屽嚱鏁板悕杩樻槸f()
+    // Change return type: 把返回值从int改成void，函数名还是f()
     void f() const
     {
         cout << "Derived3::f()\n";
@@ -1649,7 +1649,7 @@ public:
 class Derived4 : public Base
 {
 public:
-    // Change argument list: 鎶婂弬鏁颁粠鏃犲弬/string鏀规垚int锛屽嚱鏁板悕杩樻槸f()
+    // Change argument list: 把参数从无参/string改成int，函数名还是f()
     int f(int) const
     {
         cout << "Derived4::f()\n";
@@ -1660,15 +1660,15 @@ public:
 
 ### Choosing composition vs inheritance
 
-![image-20260412133031660](img/oop_assets/image-20260412133031660.png)
+![image-20260412133031660](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412133031660.png)
 
 ## Access Control
 
-| 缁ф壙鏂瑰紡                  | 娲剧敓绫诲唴閮ㄨ闂熀绫?         | 娲剧敓绫诲璞¤闂熀绫?| 鏍稿績鐗圭偣                   | 瀵瑰簲鍏崇郴                    |
+| 继承方式                  | 派生类内部访问基类          | 派生类对象访问基类 | 核心特点                   | 对应关系                    |
 | ------------------------- | --------------------------- | ------------------ | -------------------------- | --------------------------- |
-| **public锛堝叕鏈夌户鎵匡級**    | 鍙闂?`public`/`protected` | 浠呭彲璁块棶 `public`  | 鍩虹被鎺ュ彛瀹屽叏鏆撮湶缁欏閮?    | **is-a锛堟槸涓€涓級**锛屾渶甯哥敤  |
-| **protected锛堜繚鎶ょ户鎵匡級** | 鍙闂?`public`/`protected` | **涓嶅彲璁块棶浠讳綍**   | 鍩虹被鎺ュ彛鍙鍚庝唬娲剧敓绫诲彲瑙?| 鍑犱箮涓嶇敤                    |
-| **private锛堢鏈夌户鎵匡級**   | 鍙闂?`public`/`protected` | **涓嶅彲璁块棶浠讳綍**   | 鍩虹被鎺ュ彛瀹屽叏瀵瑰闅愯棌       | **has-a锛堟湁涓€涓級**锛屾瀬灏戠敤 |
+| **public（公有继承）**    | 可访问 `public`/`protected` | 仅可访问 `public`  | 基类接口完全暴露给外部     | **is-a（是一个）**，最常用  |
+| **protected（保护继承）** | 可访问 `public`/`protected` | **不可访问任何**   | 基类接口只对后代派生类可见 | 几乎不用                    |
+| **private（私有继承）**   | 可访问 `public`/`protected` | **不可访问任何**   | 基类接口完全对外隐藏       | **has-a（有一个）**，极少用 |
 
 ### public
 
@@ -1676,15 +1676,15 @@ public:
 
 ### private
 
-鏃犺浠€涔堢户鎵挎柟寮忥紝瀛愮被閮藉彲浠ヨ闂埗绫荤殑public鍜宲rotected
+无论什么继承方式，子类都可以访问父类的public和protected
 
-private淇グ绗﹀彧鏄娇寰楃埗绫荤殑protected&public鍙樻垚澶栭儴鏃犳硶璁块棶
+private修饰符只是使得父类的protected&public变成外部无法访问
 
 ### protected
 
-protect淇グ绗﹀湪娌℃湁缁ф壙鐨勬椂鍊欏簲璇ヤ笌private娌℃湁浠讳綍鍖哄埆
+protect修饰符在没有继承的时候应该与private没有任何区别
 
-娲剧敓绫诲唴閮ㄦ垚鍛樺彲浠ヨ闂紝浣嗗閮ㄤ笉鍙闂?
+派生类内部成员可以访问，但外部不可访问
 
 ### example
 
@@ -1725,7 +1725,7 @@ public:
         Move(3,2);
     }
 };
-//杩欎釜鏃跺€欏鏋淰鏀逛负private缁ф壙锛岄偅涔堜緷鐒跺彲浠ヤ娇鐢∕ove浜嗭紱浣嗗鏋滄槸Rectangle鏀逛负private缁ф壙灏变笉鍙互浜?
+//这个时候如果V改为private继承，那么依然可以使用Move了；但如果是Rectangle改为private继承就不可以了
 
 //Example3
 class Rectangle:private Location{
@@ -1745,15 +1745,15 @@ void Rectangle::InitR(int x,int y,int w,int h){
 
 
 
-![image-20260412162313597](img/oop_assets/image-20260412162313597.png)
+![image-20260412162313597](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412162313597.png)
 
-閽堝浠ヤ笂缁ф壙绉佹湁鐨勪慨鏀规柟娉曪紝鎴戜滑鍦╮ectangle鐨刾ublic閮ㄥ垎鎵嬪姩鍖呰锛堣浆鍙戯級鐖剁被鐨勫嚱鏁帮細
+针对以上继承私有的修改方法，我们在rectangle的public部分手动包装（转发）父类的函数：
 
 ```cpp
 class Rectangle: private Location {
 public:
     void InitR(int x,int y,int w,int h);
-    // 鎵嬪姩杞彂鐖剁被鐨刾ublic鎺ュ彛
+    // 手动转发父类的public接口
     void Move(int xOff,int yOff) { Location::Move(xOff,yOff); }
     int GetX() { return Location::GetX(); }
     int GetY() { return Location::GetY(); }
@@ -1771,29 +1771,29 @@ protected:
     void f3();
 };
 
-// Derived1 淇濇姢缁ф壙 Base
+// Derived1 保护继承 Base
 class Derived1 : protected Base {};
 
-// Derived2 鍏湁缁ф壙 Derived1
+// Derived2 公有继承 Derived1
 class Derived2 : public Derived1 {
 public:
     void fun() {
-        f1(); // 鉁?ok
-        f3(); // 鉁?ok
+        f1(); // ✅ ok
+        f3(); // ✅ ok
     }
 };
 
 int main() {
     Derived1 d;
-    d.f1(); // 鉂?error
-    d.f3(); // 鉂?error
+    d.f1(); // ❌ error
+    d.f3(); // ❌ error
     return 0;
 }
 ```
 
 ## Operator overloading & inheritance
 
-闄や簡涓婃枃鎻愬強鐨勮祴鍊艰繍绠楃锛屽叾浠栬繍绠楃閲嶈浇閮戒細琚户鎵垮埌瀛愮被
+除了上文提及的赋值运算符，其他运算符重载都会被继承到子类
 
 ## Multiple Inheritance
 
@@ -1850,15 +1850,15 @@ void A::Print(){
 }
 ```
 
-涓や釜鐖剁被鐨勬瀯閫犻『搴忔槸鎸夌収缁ф壙鏃剁殑椤哄簭鏉ョ殑
+两个父类的构造顺序是按照继承时的顺序来的
 
-![image-20260412170852112](img/oop_assets/image-20260412170852112.png)
+![image-20260412170852112](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412170852112.png)
 
 ## Incremental development
 
 ### Ambiguity
 
-褰撲竴涓被鐨勪袱涓埗绫诲惈鏈夊悓鍚嶆垚鍛樺嚱鏁扮殑鏃跺€欙紝灏变細ambiguity锛屾垜浠簲璇ヤ娇鐢╜::`
+当一个类的两个父类含有同名成员函数的时候，就会ambiguity，我们应该使用`::`
 
 ```cpp
 class A{
@@ -1874,7 +1874,7 @@ class C:public A,public B{
 public:
     void f();
 };
-//杩欐椂鍊欏鏋滃湪main涓洿鎺ョ敤c.f()浼氬彂鐢焌mbiguous閿欒
+//这时候如果在main中直接用c.f()会发生ambiguous错误
 //1
 void main(){
     C c;
@@ -1888,14 +1888,14 @@ public:
 void C::f(){
     A::f();
 }
-//杩欐牱閲嶆柊瀹氫箟涓€涓嬩篃鏄彲浠ョ殑
+//这样重新定义一下也是可以的
 ```
 
-涔熸湁鍙兘瀛樺湪涓嬮潰杩欑鎯呭喌锛?
+也有可能存在下面这种情况：
 
-![image-20260412163947448](img/oop_assets/image-20260412163947448.png)
+![image-20260412163947448](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412163947448.png)
 
-鎴戜滑鏈変笁绉嶆柟娉曪紝涓ょ璺熷垰鎵嶇殑鍙岄噸缁ф壙涓€鑷达紝绗笁绉嶆槸virtual base class
+我们有三种方法，两种跟刚才的双重继承一致，第三种是virtual base class
 
 ```cpp
 class D:virtual public A,public B,virtual public C{
@@ -1903,23 +1903,23 @@ class D:virtual public A,public B,virtual public C{
 };
 ```
 
-杩欐牱缁ф壙灏变細琚紭鍖?
+这样继承就会被优化
 
-![image-20260412164114150](img/oop_assets/image-20260412164114150.png)
+![image-20260412164114150](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412164114150.png)
 
-瀵逛簬铏氬熀绫荤殑缁ф壙锛?
+对于虚基类的继承：
 
-It is called only once.锛堝彧琚皟鐢ㄤ竴娆★級
+It is called only once.（只被调用一次）
 
-Only from the most derived class.锛堝彧鑳界敱 鈥滄渶娲剧敓绫烩€?璋冪敤锛?
+Only from the most derived class.（只能由 “最派生类” 调用）
 
-Called before non-virtual bases.锛堝湪鏋勯€犻潪铏氬熀绫?*涔嬪墠**璋冪敤锛?
+Called before non-virtual bases.（在构造非虚基类**之前**调用）
 
-Listed in all derived classes' initializers.锛堟墍鏈夋淳鐢熺被閮藉繀椤诲垪鍑哄畠锛?
+Listed in all derived classes' initializers.（所有派生类都必须列出它）
 
-If omitted, use default constructor.锛堢渷鐣ュ垯闅愬紡璋冪敤榛樿鏋勯€狅級
+If omitted, use default constructor.（省略则隐式调用默认构造）
 
-![image-20260412165101504](img/oop_assets/image-20260412165101504.png)
+![image-20260412165101504](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412165101504.png)
 
 ```cpp
 #include <iostream>
@@ -1960,27 +1960,27 @@ void main()
 
 ## Upcasting
 
-璁╁熀绫荤殑鎸囬拡鍙互鎸囧悜娲剧敓绫?
+让基类的指针可以指向派生类
 
 ```cpp
-// 鍩虹被锛氫箰鍣?
+// 基类：乐器
 class Instrument {
 public:
-    void play() const {} // 涔愬櫒鐨勯€氱敤鎺ュ彛锛氭紨濂?
+    void play() const {} // 乐器的通用接口：演奏
 };
 
-// 瀛愮被锛氱涔愬櫒锛屽叕鏈夌户鎵縄nstrument锛堟弧瓒砳s-a锛氱涔愬櫒鏄竴绉嶄箰鍣級
+// 子类：管乐器，公有继承Instrument（满足is-a：管乐器是一种乐器）
 class Wind : public Instrument {};
-// 缁欎箰鍣ㄨ皟闊崇殑鍑芥暟锛屾帴鏀禝nstrument&绫诲瀷鐨勫弬鏁?
+// 给乐器调音的函数，接收Instrument&类型的参数
 void tune(Instrument& i) { 
-    i.play(); // 璋冪敤涔愬櫒鐨刾lay鏂规硶
+    i.play(); // 调用乐器的play方法
 }
 
 ```
 
 # 15.Polymorphism & Virtual Functions
 
-鎺ョ潃涓婇潰鐨剈pcasting 
+接着上面的upcasting 
 
 ```cpp
 class Instrument {
@@ -2002,9 +2002,9 @@ void main()
 }
 ```
 
-杩欑鎯呭喌鐨刞Wind::play`娌℃湁鎴愬姛璋冪敤锛屽彧璋冪敤浜哷Instrumental::play`
+这种情况的`Wind::play`没有成功调用，只调用了`Instrumental::play`
 
-鎴戜滑瑕佺敤铏氬嚱鏁拌В鍐宠繖涓棶棰?
+我们要用虚函数解决这个问题
 
 ## Virtual functions
 
@@ -2016,12 +2016,12 @@ Virtual Functions(overriding) : dynamically determined
 
 Function overloading: statically determined
 
-| 鐗规€?| Function Overloading | Virtual Function |
+| 特性 | Function Overloading | Virtual Function |
 | ---- | -------------------- | ---------------- |
-| 鏃堕棿 | 缂栬瘧鏈?              | 杩愯鏃?          |
-| 缁戝畾 | static binding       | dynamic binding  |
-| 鏉′欢 | 鍙傛暟涓嶅悓             | 缁ф壙 + virtual   |
-| 鏈川 | 鍚嶅瓧澶嶇敤             | 琛屼负澶氭€?        |
+| 时间 | 编译期               | 运行时           |
+| 绑定 | static binding       | dynamic binding  |
+| 条件 | 参数不同             | 继承 + virtual   |
+| 本质 | 名字复用             | 行为多态         |
 
 ```cpp
 //: C15:Instrument2.cpp
@@ -2042,7 +2042,7 @@ class Wind : public Instrument
 {
 public:
     // Redefine interface function:
-    virtual void play( ) const //no 鈥渧irtual鈥?is ok.
+    virtual void play( ) const //no “virtual” is ok.
     {  cout << "Wind::play" << endl;  }
 };
 
@@ -2119,13 +2119,13 @@ void Instrument :: play( ) const
 
 3.When using scope resolution operator ::, virtual mechanism will not be used.
 
-![image-20260412173459218](img/oop_assets/image-20260412173459218.png)
+![image-20260412173459218](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412173459218.png)
 
-铏氬嚱鏁颁笌浠栫殑鍚屽悕鍑芥暟蹇呴』鏄悓涓€绫荤殑
+虚函数与他的同名函数必须是同一类的
 
-**鍙湁閫氳繃鍩虹被鎸囬拡/寮曠敤鎵嶄細瑙﹀彂杩愯鏃跺鎬?*
+**只有通过基类指针/引用才会触发运行时多态**
 
-![image-20260412173853411](img/oop_assets/image-20260412173853411.png)
+![image-20260412173853411](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412173853411.png)
 
 ```cpp
 //: C15:Early.cpp
@@ -2157,15 +2157,15 @@ void main( )
 
 ```
 
-![image-20260412174115556](img/oop_assets/image-20260412174115556.png)
+![image-20260412174115556](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412174115556.png)
 
 ## Abstract base classed and pure virtual functions
 
-鎶借薄绫绘渶灏戞湁涓€涓函铏氬嚱鏁?
+抽象类最少有一个纯虚函数
 
-鎶借薄绫讳笉鍙疄渚嬪寲
+抽象类不可实例化
 
-瀵逛簬鎶借薄绫荤殑鎵€鏈夋寚閽堥兘浼歶pcasting
+对于抽象类的所有指针都会upcasting
 
 ```cpp
 #include <iostream>
@@ -2212,11 +2212,11 @@ void main()
 
 ## Inheritance and the VTABLE
 
-瀛愮被 VTABLE = 鍩虹被 VTABLE 鐨勨€滃鍒?+ 淇敼鈥?
+子类 VTABLE = 基类 VTABLE 的“复制 + 修改”
 
-濡傛灉瀛愮被override锛屽垯鏇挎崲鎴愬瓙绫荤殑鍑芥暟鍦板潃
+如果子类override，则替换成子类的函数地址
 
-濡傛灉瀛愮被娌verride锛屽垯娌跨敤鐖剁被鐨勫湴鍧€
+如果子类没override，则沿用父类的地址
 
 ```cpp
 //: C15:AddingVirtuals.cpp, VTABLE
@@ -2244,12 +2244,12 @@ int main() {
 
 ```
 
-![image-20260412203515316](img/oop_assets/image-20260412203515316.png)
+![image-20260412203515316](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412203515316.png)
 
 ```cpp
 Dog(const string& petName) : Pet(petName) {}
-                               鈫?
-                           杩欓噷灏辨槸鍒濆鍖栧垪琛?
+                               ↑
+                           这里就是初始化列表
 ```
 
 ### Object Slicing
@@ -2296,7 +2296,7 @@ This is Zhang
 This is Li   ?
 ```
 
-`describe(d)`鐨勬椂鍊欐垜浠殑d渚濈劧鏄痯et鐨勬柟娉曪紝鑰宒鏄痙og瀵硅薄锛岄偅涔堟垜浠氨鏃犳硶琛ㄧずdog鑷繁鐨勯儴鍒哷sleep`
+`describe(d)`的时候我们的d依然是pet的方法，而d是dog对象，那么我们就无法表示dog自己的部分`sleep`
 
 ## Overloading & Overriding
 
@@ -2349,24 +2349,24 @@ int main() {
 
 - The constructor initializes the VPTR.The constructor cannot be virtual.
 
-瀵逛簬涓€涓瀯閫犺繃绋嬶紝鎴戜滑鍏堟瀯閫犱粬鐨剉ptr锛岃vptr鎸囧悜鐖剁被鐨剉table骞朵慨鏀逛负缁ф壙绫荤殑vtable
+对于一个构造过程，我们先构造他的vptr，让vptr指向父类的vtable并修改为继承类的vtable
 
-鏋勯€犲嚱鏁颁笉鑳芥槸铏氬嚱鏁帮紝鍥犱负鏋勯€犲嚱鏁拌礋璐ｆ瀯閫爒ptr
+构造函数不能是虚函数，因为构造函数负责构造vptr
 
-![image-20260412205641669](img/oop_assets/image-20260412205641669.png)
+![image-20260412205641669](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412205641669.png)
 
 ## Destructors and virtual destructors
 
 - The destructor can and often must be virtual.
 - If the destructor in the base is declared virtual, destructors in derived classes are all virtual even without the keyword virtual.
 - To ensure destructors can be called exactly.
-![image-20260412211027289](img/oop_assets/image-20260412211027289.png)
+![image-20260412211027289](C:\Users\zhang\AppData\Roaming\Typora\typora-user-images\image-20260412211027289.png)
 
-濡傛灉鍩虹被鏋愭瀯鍑芥暟鏄?virtual锛岄偅涔堟墍鏈夋淳鐢熺被鏋愭瀯鍑芥暟鑷姩涔熸槸 virtual锛堝嵆浣夸笉鍐?virtual锛?
+如果基类析构函数是 virtual，那么所有派生类析构函数自动也是 virtual（即使不写 virtual）
 
 ## Operator overloading
 
-杩愮畻绗﹂噸杞藉彲浠ュ悜鍏朵粬浠讳綍鍑芥暟涓€鏍穠irtual
+运算符重载可以向其他任何函数一样virtual
 
 ## Downcasting
 
@@ -2415,7 +2415,7 @@ void main()
 {
     cout<<max (3,  5.6)<<endl; 
     cout<<max (5.6,  3)<<endl; 
-    cout<<max (鈥榓鈥?  3)<<endl; 
+    cout<<max (‘a’,  3)<<endl; 
 }
 
 ```
@@ -2450,5 +2450,4 @@ void Test<T1,T2>:: Print()
   {   cout<<a<<", "<<b<<endl;   }
 
 ```
-
 
