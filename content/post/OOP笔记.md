@@ -430,7 +430,8 @@ class Car{
 private:
     int weight;
 public:
-    void set(int i)
+    void set(int i);
+    friend int totalWeight(Car &c,Boat &b);
 };
 class Boat{
 private:
