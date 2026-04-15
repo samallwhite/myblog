@@ -2147,7 +2147,78 @@ void main() {
   f(horn); // Wind::adjust
 }
 ```
+此处，我们给出继承中涉及构造函数的问题示例：
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
 
+class Person {
+private:
+    string name;
+
+public:
+    Person(string name = "zjh") : name(name) {}
+
+    virtual void show() const {
+        cout << "name: " << name << endl;
+    }
+
+    virtual ~Person() {}
+
+protected:
+    string getName() const {
+        return name;
+    }
+};
+
+class Teacher : virtual public Person {
+protected:
+    string vacancy;
+
+public:
+    Teacher(string name = "zjh", string vacancy = "headmaster")
+        : Person(name), vacancy(vacancy) {}
+
+    void show() const override {
+        cout << "name: " << getName() << endl;
+        cout << "vacancy: " << vacancy << endl;
+    }
+};
+
+class Student : virtual public Person {
+protected:
+    string ID;
+
+public:
+    Student(string name = "zjh", string ID = "1122211")
+        : Person(name), ID(ID) {}
+
+    void show() const override {
+        cout << "name: " << getName() << endl;
+        cout << "ID: " << ID << endl;
+    }
+};
+
+class TA : public Teacher, public Student {
+public:
+    TA(string name = "zjh", string vacancy = "niubi", string ID = "1231334214")
+        : Person(name), Teacher(name, vacancy), Student(name, ID) {}
+
+    void show() const override {
+        cout << "name: " << getName() << endl;
+        cout << "vacancy: " << vacancy << endl;
+        cout << "ID: " << ID << endl;
+    }
+};
+
+int main() {
+    Person* p = new TA("Zhang", "assistant", "20240001");
+    p->show();
+    delete p;
+    return 0;
+}
+```
 1. A Virtual function is a nonstatic member function.
 2. If a virtual function is defined outside the class body, keyword virtual is only needed when declared.
 
