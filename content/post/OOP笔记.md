@@ -1039,7 +1039,28 @@ void main()
 	calculator::Print(Add(a, b));
 }
 ```
+## Static Member Function
+静态成员函数与静态成员变量相似，由全部类的实体共享同一个函数，且该函数无this指针
+```cpp
+class Myclass {
+public:
+    static void show();  // 静态成员函数
+private:
+    static int obj;      // 静态数据成员
+    int i;               // 普通成员
+};
 
+int Myclass::obj = 8;
+
+void Myclass::show() {
+    cout << obj << endl;  // ✅ 可以访问 static
+    // cout << i; ❌ 不可以访问普通成员
+}
+
+int main() {
+    Myclass::show();   // ✔️ 不需要对象
+}
+```
 # 11.References & the Copy-Constructor
 
 返回引用：
