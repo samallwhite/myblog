@@ -1,6 +1,6 @@
 ---
 title: "具身智能task1笔记"
-date: 2026-04-15T21:36:44+08:00
+date: 2026-04-15T12:00:00+08:00
 draft: false
 slug: "Embodied-notes"
 tags:
