@@ -1150,6 +1150,30 @@ The Copy Constructor is called when
 The Copy Constructor **is not called whenpassing arguments by references**. Because no new object is created.
 
 ![image-20260411170745301](img/oop_assets/image-20260411170745301.png)、
+我们需要区分深拷贝&浅拷贝：
+- 浅拷贝是逐字复制成员变量的值的行为，当我们没有给出copy constructor的时候，编译器自动生成的copy constructor默认执行这种行为(memberwise copy)，当成员含有指针的时候会造成新旧成员指向同一处地址的情况
+- 深拷贝在复制变量的同时开辟了一块新内存
+
+会触发浅拷贝的三种情况：
+用一个对象初始化另一个
+```cpp
+A b = a;
+```
+函数传值
+```cpp
+f(a);
+```
+函数返回对象
+```cpp
+return obj;
+```
+
+| 项目   | 浅拷贝       | 深拷贝     |
+| ---- | --------- | ------- |
+| 内存   | 共享        | 独立      |
+| 指针   | 复制地址      | 复制内容    |
+| 安全性  | ❌ 危险      | ✅ 安全    |
+| 默认行为 | ✔ 默认就是浅拷贝 | ❌ 需要自己写 |
 
 ## Pointers to members
 
