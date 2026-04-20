@@ -2675,4 +2675,45 @@ void Test<T1,T2>:: Print()
   {   cout<<a<<", "<<b<<endl;   }
 
 ```
+## Class Templates with functions defined outside the class
+```cpp
+#include <iostream>
+#include <cstdlib>
+using namespace std;
 
+template<typename T>
+class StackTemplate {
+    enum { ssize = 100 };
+    T stack[ssize];
+    int top;
+public:
+    StackTemplate();
+    void push(const T& i);
+    T pop();
+};
+template<typename T>
+StackTemplate<T>::StackTemplate() : top(0) {
+}
+template<typename T>
+void StackTemplate<T>::push(const T& i) {
+    if (top < ssize) {stack[top++] = i;} 
+    else {exit(0);}
+}
+
+template<typename T>
+T StackTemplate<T>::pop() {
+    if (top > 0) {return stack[--top];}
+    else {exit(0);}
+}
+
+int main() {
+    StackTemplate<int> is;
+    for (int i = 0; i < 10; i++) {is.push(i);}
+    for (int k = 0; k < 10; k++) {cout << is.pop() << ",";}
+    cout << endl;
+    StackTemplate<double> iss;
+    for (int i = 0; i < 10; i++) {iss.push((double)i * 0.5);}
+    for (int k = 0; k < 10; k++) {cout << iss.pop() << ",";}
+    return 0;
+}
+```
