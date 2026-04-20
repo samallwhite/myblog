@@ -1427,7 +1427,46 @@ public:
     ~A() { delete p; }
 };
 ```
-
+`==`可以重载为`bool`类型的函数：
+```cpp
+#include<iostream>
+#include<string>
+using namespace std;
+class Student{
+    std::string stuID;
+    std::string name;
+    double grade;
+    static int num;
+public:
+    Student(std::string ss,std::string nn,double gg):stuID(ss),name(nn),grade(gg){num++;}
+    Student(std::string ss,std::string nn,double gg=0):stuID(ss),name(nn),grade(gg){num++;}
+    ~Student(){cout<<"Destructor Called"<<endl;num--;}
+    static int getnum(){return num;}
+    std::string getstuID()const {return stuID;}
+    std::string getname()const {return name;}
+    double getgrade()const {return grade;}
+    void show()const {cout<<"stuID:"<<stuID<<",name:"<<name<<",grade:"<<grade<<endl;}
+    Student& operator=(const Student& st);
+    bool operator==(const Student& st);
+    friend ostream& operator<<(ostream& os,const Student& st);
+};
+int Student::num = 0;
+Student& Student::operator=(const Student& st){
+    if(this != &st){
+        stuID = st.stuID;
+        name = st.name;
+        grade = st.grade;
+    }
+    return *this;
+}
+bool Student::operator==(const Student& st)const{
+    return (stuID==st.stuID && name==st.name && grade==st.grade)?true:false;
+}
+ostream& operator<<(ostream& os,const Student& st){
+    os<<"stuID:"<<st.stuID<<",name:"<<st.name<<",grade:"<<st.grade;
+    return os;
+}
+```
 ## Automatic type conversion
 
 关于构造函数转换可以参考前文中的虚数类例子
@@ -2480,6 +2519,75 @@ int main() {
 ![image-20260412211027289](img/oop_assets/image-20260412211027289.png)
 
 如果基类析构函数是 virtual，那么所有派生类析构函数自动也是 virtual（即使不写 virtual）
+
+如果我们没有写析构函数为虚函数，那么就有可能导致在使用`new`&`delete`的基类指针创造对象的时候导致无法完全析构的问题，参考代码：
+```cpp
+#include<iostream>
+using namespace std;
+class Shape{
+public:
+    virtual double area()=0;
+    virtual ~Shape(){cout<<"Shape Destructor called."<<endl;}
+};
+class Circle:public Shape{
+    double radius;
+public:
+    Circle(double rr):radius(rr){}
+    ~Circle(){cout<<"Circle Destructor Called."<<endl;}
+    double area();
+};
+class Rectangle:public Shape{
+    double a;
+    double b;
+public:
+    Rectangle(double aa,double bb):a(aa),b(bb){}
+    ~Rectangle(){cout<<"Rectangle Destructor Called."<<endl;}
+    double area();
+};
+double Circle::area(){
+    return radius*radius*3.14;
+}
+double Rectangle::area(){
+    return a*b;
+}
+
+int main(){
+    Circle C1(2);
+    Rectangle R1(3,4);
+    Shape *ptr = &C1;
+    cout<<ptr->area()<<endl;
+    ptr = &R1;
+    cout<<ptr->area()<<endl;
+
+    Shape *ptr1 = new Circle(3);
+    cout<<ptr1->area()<<endl;
+    delete ptr1;
+    return 0;
+}
+```
+若不写`virtual`的话，那么输出是这样的：
+```bash
+12.56
+12
+28.26
+Shape Destructor called.//编译器没有调用Circle的析构，Circle析构不完全
+Rectangle Destructor Called.
+Shape Destructor called.
+Circle Destructor Called.
+Shape Destructor called.
+```
+写了之后则是这样的：
+```bash
+12.56
+12
+28.26
+Circle Destructor Called.
+Shape Destructor called.
+Rectangle Destructor Called.
+Shape Destructor called.
+Circle Destructor Called.
+Shape Destructor called.
+```
 
 ## Operator overloading
 

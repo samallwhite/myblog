@@ -1,10 +1,1 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-    <channel>
-        <title>Categories on 我的博客</title>
-        <link>https://samallwhite.github.io/myblog/categories/</link>
-        <description>Recent content in Categories on 我的博客</description>
-        <generator>Hugo -- gohugo.io</generator>
-        <language>zh-cn</language><atom:link href="https://samallwhite.github.io/myblog/categories/index.xml" rel="self" type="application/rss+xml" />
-    </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Categories on samallwhite</title><link>https://samallwhite.github.io/myblog/categories/</link><description>Recent content in Categories on samallwhite</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Mon, 13 Apr 2026 00:00:00 +0800</lastBuildDate><atom:link href="https://samallwhite.github.io/myblog/categories/index.xml" rel="self" type="application/rss+xml"/><item><title>数据库原理</title><link>https://samallwhite.github.io/myblog/categories/database-principles/</link><pubDate>Mon, 13 Apr 2026 00:00:00 +0800</pubDate><guid>https://samallwhite.github.io/myblog/categories/database-principles/</guid><description/></item><item><title>Notes</title><link>https://samallwhite.github.io/myblog/categories/notes/</link><pubDate>Sun, 12 Apr 2026 21:36:44 +0800</pubDate><guid>https://samallwhite.github.io/myblog/categories/notes/</guid><description/></item><item><title>动手学深度学习</title><link>https://samallwhite.github.io/myblog/categories/d2l/</link><pubDate>Wed, 23 Jul 2025 14:36:00 +0800</pubDate><guid>https://samallwhite.github.io/myblog/categories/d2l/</guid><description/></item></channel></rss>
